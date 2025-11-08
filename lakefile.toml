@@ -1,0 +1,10 @@
+name = "BV"
+version = "0.1.0"
+defaultTargets = ["bv"]
+
+[[lean_lib]]
+name = "BV"
+
+[[lean_exe]]
+name = "bv"
+root = "Main"
