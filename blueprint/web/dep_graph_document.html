@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dependency graph</title>
+  <meta name="generator" content="plasTeX" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles/theme-white.css" />
+  <link rel="stylesheet" href="styles/dep_graph.css" />
+  
+  <script type="text/x-mathjax-config">
+  
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  
+  </script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">  </script>
+
+
+<link rel="stylesheet" href="styles/extra_styles.css" />
+
+</head>
+
+<body>
+<header>
+  <a class="toc" href="index.html">Home</a>
+  <h1 id="doc_title">Dependencies</h1>
+</header>
+<div class="wrapper">
+<div class="content">
+  <div id="Legend">
+    <span id="legend_title" class="title">Legend
+    <div class="btn">
+       <div class="bar"></div>
+       <div class="bar"></div>
+       <div class="bar"></div>
+    </div></span> 
+    <dl class="legend">
+      
+      <dt>Boxes</dt><dd>definitions</dd>
+      
+      <dt>Ellipses</dt><dd>theorems and lemmas</dd>
+      
+      <dt>Blue border</dt><dd>the <em>statement</em> of this result is ready to be formalized; all prerequisites are done</dd>
+      
+      <dt>Orange border</dt><dd>the <em>statement</em> of this result is not ready to be formalized; the blueprint needs more work</dd>
+      
+      <dt>Blue background</dt><dd>the <em>proof</em> of this result is ready to be formalized; all prerequisites are done</dd>
+      
+      <dt>Green border</dt><dd>the <em>statement</em> of this result is formalized</dd>
+      
+      <dt>Green background</dt><dd>the <em>proof</em> of this result is formalized</dd>
+      
+      <dt>Dark green background</dt><dd>the <em>proof</em> of this result and all its ancestors are formalized</dd>
+      
+      <dt>Dark green border</dt><dd>this is in Mathlib</dd>
+      
+    </dl>
+  </div>
+    <div id="graph"></div>
+<div id="statements">
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.BombieriVinogradov_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.BombieriVinogradov" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">10</span><span class="theorem_thmtitle">Bombieri-Vinogradov</span></div>
+    <div class="thm_thmcontent"><p> For each fixed \(A \geq 0\), </p>
+<div class="displaymath" id="a0000000015">
+  \[ \sum _{q \le Q} \max _{y \le x} \max _{a \in (\mathbb {Z}/q\mathbb {Z})^*} \left| \pi (y; q, a) - \frac{\text{li}(y)}{\varphi (q)} \right| \ll _A \frac{x}{(\log x)^{A+1}} \]
+</div>
+<p>uniformly for all \(x \ge 2\) and \(1 \le Q \le \frac{\sqrt{x}}{(\log x)^{A+3}}\).</p>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.BombieriVinogradov">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.BombieriVinogradov">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.Delta_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.Delta" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">1</span></div>
+    <div class="thm_thmcontent">
+<div class="displaymath" id="a0000000004">
+  \[ \Delta _f(x ;q, a) := \sum _{n \le x, ~  n \equiv a \pmod q} f(n) ~  - \frac{1}{\varphi (q)} \sum _{n \le x, (n, q) = 1} f(n)  \]
+</div>
+<p> for \(x \ge 1\), \(q \in \mathbb {N}\)</p>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.Delta">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Delta">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.Delta_eq_sum_char_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.Delta_eq_sum_char" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">2</span></div>
+    <div class="thm_thmcontent">
+<div class="displaymath" id="a0000000005">
+  \[ \Delta _f(y ;q, a) = \frac{1}{\varphi (q)} \sum _{\chi \pmod{q}, \chi \ne \chi _0} \bar\chi (a) \sum _{n \le y} f(n) \chi (n)  \]
+</div>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.Delta_eq_sum_char">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Delta_eq_sum_char">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.Delta_primeIndicator_eq_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.Delta_primeIndicator_eq" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">3</span></div>
+    <div class="thm_thmcontent"><p> Notice: </p>
+<div class="displaymath" id="a0000000007">
+  \[ \Delta _{1_P}(x; q, a) = \pi (x; q,a) - \frac{1}{\varphi (q)} \sum _{p \le x, p \not\mid q} 1  \]
+</div>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.Delta_primeIndicator_eq">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Delta_primeIndicator_eq">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.Lambda_decomp_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.Lambda_decomp" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">9</span></div>
+    <div class="thm_thmcontent"><p> Decompose \(\Lambda = \Lambda ^\sharp + \Lambda ^\flat + \Lambda _{\le U}\)</p>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.Lambda_decomp">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Lambda_decomp">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.LambdaFlat_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.LambdaFlat" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">7</span></div>
+    <div class="thm_thmcontent"><p> \(\Lambda ^\flat = (\Lambda _{{\gt}U} * 1) * \mu _{{\gt}V}\)</p>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.LambdaFlat">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.LambdaFlat">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.LambdaLE_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.LambdaLE" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">8</span></div>
+    <div class="thm_thmcontent"><p> \(\Lambda _{\le U} = 1_{≤ U} \cdot \Lambda \)</p>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.LambdaLE">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.LambdaLE">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.LambdaSharp_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.LambdaSharp" style="display: none">
+    <div class="thm_thmheading">
+      <span class="definition_thmcaption">
+      Definition
+      </span>
+      <span class="definition_thmlabel">6</span></div>
+    <div class="thm_thmcontent"><p> \(\Lambda ^\sharp = \mu _{\le V} * \log - (\Lambda _{\le U} * \mu _{\le V}) * 1\)</p>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.LambdaSharp">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.LambdaSharp">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">5</span></div>
+    <div class="thm_thmcontent"><p> For \(x \ge 2\), \(q \in \mathbb {N}\) and \(a \in (\mathbb {Z}/ q\mathbb {Z})^*\) we have </p>
+<div class="displaymath" id="a0000000012">
+  \[  \max _{y \le x} \left| \Delta _{1_P}(y; q, a) \right| \ll \frac{1}{\log x} \left(\max _{\sqrt x \le y \le x} \left|\Delta _\Lambda (y; q, a)\right| + \sqrt x \right) \]
+</div>
+<p> proof. See p. 279. Uses combinatorics, an estimate on \(\sum _{p \le x} 1/\log p\) and partial summation.</p>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+
+
+    
+    <div class="dep-modal-container" id="BombieriVinogradov.sum_primes_not_dvd_eq_li_modal">
+      <div class="dep-modal-content">
+          <button class="dep-closebtn">
+<svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        
+  <div class="thm" id="BombieriVinogradov.sum_primes_not_dvd_eq_li" style="display: none">
+    <div class="thm_thmheading">
+      <span class="theorem_thmcaption">
+      Theorem
+      </span>
+      <span class="theorem_thmlabel">4</span></div>
+    <div class="thm_thmcontent">
+<div class="displaymath" id="a0000000009">
+  \[  \sum _{p \le x, p \not\mid q} 1 = li(x) + O(xe^{-c\sqrt{\log x}}+\log q) \]
+</div>
+</div>
+
+    <a class="latex_link" href="index.html#BombieriVinogradov.sum_primes_not_dvd_eq_li">LaTeX</a>
+    
+    
+  <a class="lean_link lean_decl" href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.sum_primes_not_dvd_eq_li">Lean</a>
+    
+    
+  
+    
+  </div>
+    
+      </div>
+    </div>
+</div>
+</div> <!-- content -->
+</div> <!-- wrapper -->
+<script src="js/jquery.min.js" type="text/javascript"></script>
+
+<script src="js/d3.min.js"></script>
+<script src="js/hpcc.min.js"></script>
+<script src="js/d3-graphviz.js"></script>
+
+<script type="text/javascript">
+const graphContainer = d3.select("#graph");
+const width = graphContainer.node().clientWidth;
+const height = graphContainer.node().clientHeight;
+
+
+graphContainer.graphviz({useWorker: true})
+    .width(width)
+    .height(height)
+    .fit(true)
+    .renderDot(`strict digraph "" {	graph [bgcolor=transparent];	node [label="\N",		penwidth=1.8	];	edge [arrowhead=vee];	"BombieriVinogradov.LambdaFlat"	[color=blue,		fillcolor="#A3D6FF",		label="BombieriVinogradov.LambdaFlat",		shape=box,		style=filled];	"BombieriVinogradov.Delta"	[color=blue,		fillcolor="#A3D6FF",		label="BombieriVinogradov.Delta",		shape=box,		style=filled];	"BombieriVinogradov.Delta_eq_sum_char"	[color=green,		label="BombieriVinogradov.Delta_eq_sum_char",		shape=ellipse];	"BombieriVinogradov.LambdaLE"	[color=blue,		fillcolor="#A3D6FF",		label="BombieriVinogradov.LambdaLE",		shape=box,		style=filled];	"BombieriVinogradov.Lambda_decomp"	[color=green,		label="BombieriVinogradov.Lambda_decomp",		shape=ellipse];	"BombieriVinogradov.LambdaLE" -> "BombieriVinogradov.Lambda_decomp"	[style=dashed];	"BombieriVinogradov.LambdaSharp"	[color=blue,		fillcolor="#A3D6FF",		label="BombieriVinogradov.LambdaSharp",		shape=box,		style=filled];	"BombieriVinogradov.LambdaSharp" -> "BombieriVinogradov.Lambda_decomp"	[style=dashed];	"BombieriVinogradov.Delta_primeIndicator_eq"	[color=green,		label="BombieriVinogradov.Delta_primeIndicator_eq",		shape=ellipse];	"BombieriVinogradov.sum_primes_not_dvd_eq_li"	[color=green,		label="BombieriVinogradov.sum_primes_not_dvd_eq_li",		shape=ellipse];	"BombieriVinogradov.BombieriVinogradov"	[color=blue,		fillcolor="#A3D6FF",		label="BombieriVinogradov.BombieriVinogradov",		shape=ellipse,		style=filled];	"BombieriVinogradov.sum_primes_not_dvd_eq_li" -> "BombieriVinogradov.BombieriVinogradov"	[style=dashed];	"BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda"	[color=green,		fillcolor="#A3D6FF",		label="BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda",		shape=ellipse,		style=filled];}`)
+    .on("end", interactive);
+
+latexLabelEscaper = function(label) {
+  return label.replace(/\./g, '\\.').replace(/:/g, '\\:')
+}
+
+clickNode = function() {
+  $("#statements div").hide()
+  var node_id = $('text', this).text();
+  $('.thm').hide();
+  $('#'+latexLabelEscaper(node_id)).show().children().show();
+}
+function interactive() {
+    $("span#legend_title").on("click", function () {
+           $(this).siblings('dl').toggle();
+        })
+
+    d3.selectAll('.node')
+        .attr('pointer-events', 'fill')
+        .on('click', function () {
+           var title = d3.select(this).selectAll('title').text().trim();
+           $('#statements > div').hide()
+           $('.thm').hide();
+           $('#'+latexLabelEscaper(title)+'_modal').show().children().show().children().show();
+           $('#statements').show()
+        });
+
+    d3.selectAll('.dep-closebtn').on('click', function() {
+        var modal =
+            d3.select(this).node().parentNode.parentNode.parentNode ;
+        d3.select(modal).style('display', 'none');
+    });
+}
+
+</script>
+
+</body>
+</html>

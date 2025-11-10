@@ -17,3 +17,12 @@ git = "https://github.com/PatrickMassot/checkdecls.git"
 name = "«doc-gen4»"
 git = "https://github.com/leanprover/doc-gen4"
 rev = "main"
+
+[[require]]
+name = "blueprint-gen"
+git = "https://github.com/hanwenzhu/blueprint-gen.git"
+rev = "main"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"

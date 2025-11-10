@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['$','$'], ['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formalizing Bombieri Vinogradov</title>
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/showmore.css" />
+<link rel="stylesheet" href="styles/blueprint.css" />
+<link rel="stylesheet" href="styles/extra_styles.css" />
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<div class="titlepage">
+<h1>Formalizing Bombieri Vinogradov</h1>
+<p class="authors">
+<span class="author">Arend Mellendijk</span>
+</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1 id="a0000000002">0.1 Bombieri-Vinogradov Theorem</h1>
+<p>This module contains the formalization of the Bombieri-Vinogradov theorem, a fundamental result in analytic number theory. </p>
+<h2 id="a0000000003">0.1.1 Preliminaries</h2>
+<p>Decomposing the von Mangoldt function into type I and type II functions. </p>
+<div class="definition_thmwrapper theorem-style-definition" id="BombieriVinogradov.Delta">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">1</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.Delta">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Delta" class="lean_decl">BombieriVinogradov.Delta</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  
+<div class="displaymath" id="a0000000004">
+  \[ \Delta _f(x ;q, a) := \sum _{n \le x, ~  n \equiv a \pmod q} f(n) ~  - \frac{1}{\varphi (q)} \sum _{n \le x, (n, q) = 1} f(n)  \]
+</div>
+<p> for \(x \ge 1\), \(q \in \mathbb {N}\)</p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="BombieriVinogradov.Delta_eq_sum_char">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">2</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.Delta_eq_sum_char">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Delta_eq_sum_char" class="lean_decl">BombieriVinogradov.Delta_eq_sum_char</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  
+<div class="displaymath" id="a0000000005">
+  \[ \Delta _f(y ;q, a) = \frac{1}{\varphi (q)} \sum _{\chi \pmod{q}, \chi \ne \chi _0} \bar\chi (a) \sum _{n \le y} f(n) \chi (n)  \]
+</div>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000006">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="BombieriVinogradov.Delta_primeIndicator_eq">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">3</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.Delta_primeIndicator_eq">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Delta_primeIndicator_eq" class="lean_decl">BombieriVinogradov.Delta_primeIndicator_eq</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p> Notice: </p>
+<div class="displaymath" id="a0000000007">
+  \[ \Delta _{1_P}(x; q, a) = \pi (x; q,a) - \frac{1}{\varphi (q)} \sum _{p \le x, p \not\mid q} 1  \]
+</div>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000008">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="BombieriVinogradov.sum_primes_not_dvd_eq_li">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">4</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.sum_primes_not_dvd_eq_li">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.sum_primes_not_dvd_eq_li" class="lean_decl">BombieriVinogradov.sum_primes_not_dvd_eq_li</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  
+<div class="displaymath" id="a0000000009">
+  \[  \sum _{p \le x, p \not\mid q} 1 = li(x) + O(xe^{-c\sqrt{\log x}}+\log q) \]
+</div>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000010">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">5</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda">#</a>
+    
+    <a class="icon proof" href="index.html#a0000000011"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda" class="lean_decl">BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p> For \(x \ge 2\), \(q \in \mathbb {N}\) and \(a \in (\mathbb {Z}/ q\mathbb {Z})^*\) we have </p>
+<div class="displaymath" id="a0000000012">
+  \[  \max _{y \le x} \left| \Delta _{1_P}(y; q, a) \right| \ll \frac{1}{\log x} \left(\max _{\sqrt x \le y \le x} \left|\Delta _\Lambda (y; q, a)\right| + \sqrt x \right) \]
+</div>
+<p> proof. See p. 279. Uses combinatorics, an estimate on \(\sum _{p \le x} 1/\log p\) and partial summation.</p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000011">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <p>See p. 279. Uses combinatorics, an estimate on \(\sum _{p \le x} 1/\log p\) and partial summation.</p>
+
+  </div>
+</div>
+<p>Wrapping up </p>
+<div class="definition_thmwrapper theorem-style-definition" id="BombieriVinogradov.LambdaSharp">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">6</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.LambdaSharp">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.LambdaSharp" class="lean_decl">BombieriVinogradov.LambdaSharp</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  <p> \(\Lambda ^\sharp = \mu _{\le V} * \log - (\Lambda _{\le U} * \mu _{\le V}) * 1\)</p>
+
+  </div>
+</div>
+<div class="definition_thmwrapper theorem-style-definition" id="BombieriVinogradov.LambdaFlat">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">7</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.LambdaFlat">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.LambdaFlat" class="lean_decl">BombieriVinogradov.LambdaFlat</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  <p> \(\Lambda ^\flat = (\Lambda _{{\gt}U} * 1) * \mu _{{\gt}V}\)</p>
+
+  </div>
+</div>
+<div class="definition_thmwrapper theorem-style-definition" id="BombieriVinogradov.LambdaLE">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">8</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.LambdaLE">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.LambdaLE" class="lean_decl">BombieriVinogradov.LambdaLE</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  <p> \(\Lambda _{\le U} = 1_{≤ U} \cdot \Lambda \)</p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="BombieriVinogradov.Lambda_decomp">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">9</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.Lambda_decomp">#</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="index.html#BombieriVinogradov.LambdaLE">Definition 8</a></li>
+          
+          <li><a href="index.html#BombieriVinogradov.LambdaSharp">Definition 6</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.Lambda_decomp" class="lean_decl">BombieriVinogradov.Lambda_decomp</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p> Decompose \(\Lambda = \Lambda ^\sharp + \Lambda ^\flat + \Lambda _{\le U}\)</p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000013">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="BombieriVinogradov.BombieriVinogradov">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">10</span>
+    <span class="theorem_thmtitle">Bombieri-Vinogradov</span>
+    <div class="thm_header_extras">
+
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#BombieriVinogradov.BombieriVinogradov">#</a>
+    
+    <a class="icon proof" href="index.html#a0000000014"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="index.html#BombieriVinogradov.sum_primes_not_dvd_eq_li">Theorem 4</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://FLDutchmann.github.io/lean-bombieri-vinogradov/docs/find/#doc/BombieriVinogradov.BombieriVinogradov" class="lean_decl">BombieriVinogradov.BombieriVinogradov</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="theorem_thmcontent">
+  <p> For each fixed \(A \geq 0\), </p>
+<div class="displaymath" id="a0000000015">
+  \[ \sum _{q \le Q} \max _{y \le x} \max _{a \in (\mathbb {Z}/q\mathbb {Z})^*} \left| \pi (y; q, a) - \frac{\text{li}(y)}{\varphi (q)} \right| \ll _A \frac{x}{(\log x)^{A+1}} \]
+</div>
+<p>uniformly for all \(x \ge 2\) and \(1 \le Q \le \frac{\sqrt{x}}{(\log x)^{A+3}}\).</p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000014">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <p>Apply BV_Delta and absorb the error terms</p>
+
+  </div>
+</div>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <svg  id="showmore-minus" class="icon icon-eye-minus showmore"><use xlink:href="symbol-defs.svg#icon-eye-minus"></use></svg>
+
+  <svg  id="showmore-plus" class="icon icon-eye-plus showmore"><use xlink:href="symbol-defs.svg#icon-eye-plus"></use></svg>
+
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+<script type="text/javascript" src="js/js.cookie.min.js"></script>
+<script type="text/javascript" src="js/showmore.js"></script>
+</body>
+</html>

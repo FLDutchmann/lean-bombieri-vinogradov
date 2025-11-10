@@ -1,0 +1,13 @@
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex)
+ restricted \write18 enabled.
+entering extended mode
+! I can't find file `print.tex'.
+<*> print.tex
+             
+(Press Enter to retry, or Control-Z to exit)
+Please type another input file name
+! Emergency stop.
+<*> print.tex
+             
+No pages of output.
+Transcript written on texput.log.
