@@ -19,8 +19,8 @@ git = "https://github.com/leanprover/doc-gen4"
 rev = "main"
 
 [[require]]
-name = "blueprint-gen"
-git = "https://github.com/hanwenzhu/blueprint-gen.git"
+name = "LeanArchitect"
+git = "https://github.com/hanwenzhu/LeanArchitect.git"
 rev = "main"
 
 [[require]]

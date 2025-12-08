@@ -1,11 +1,16 @@
 # Fdb version 4
-["pdflatex"] 1762761025.38883 "print.tex" "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.pdf" "print" 1762761028.39812 0
-  "../../.lake/build/blueprint/library/BV.tex" 1762760932 227 f0518a1d8f282a849301137a95a1d209 ""
-  "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/../../.lake/build/blueprint/library/BV.tex" 1762760932 227 f0518a1d8f282a849301137a95a1d209 ""
-  "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.aux" 1762761028 1125 8756b594f75aef862bfc21ca2ef7f126 "pdflatex"
-  "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.out" 1762761028 309 5c1865b3545e40519aa26506a5ed5058 "pdflatex"
-  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV.tex" 1762760931 881 4ba762e057bb2bf7ed5d6d5375d5e65e ""
-  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV/Main.tex" 1762760918 6140 bccacbd56be181bf7cbf373e834d959f ""
+["pdflatex"] 1765154525.97239 "print.tex" "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.pdf" "print" 1765155808.87438 2
+  "../../.lake/build/blueprint/library/BV.tex" 1765154521 344 46542e82b597aac776137873c9ccfad6 ""
+  "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/../../.lake/build/blueprint/library/BV.tex" 1765154521 344 46542e82b597aac776137873c9ccfad6 ""
+  "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.aux" 1765155808 446 5bc9905cbad827886b4ff475b925e245 "pdflatex"
+  "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.out" 1765154539 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV.tex" 1765154520 740 8de750f6868c8b29fd654df2cfd367b3 ""
+  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV/Defs.tex" 1765154465 2066 d2309314298bdf4d21705f79ef057e3e ""
+  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV/Main.artifacts/Bombieri-Vinogradov.tex" 1765154504 320 a393561e3ad77ea89c0909c468b58ac0 ""
+  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV/Main.artifacts/BombieriVinogradov.Delta_primeIndicator_eq.tex" 1765154504 262 2d71687fe7be14f5c1b36d275e10aeb6 ""
+  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV/Main.artifacts/BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda.tex" 1765154504 375 54e9b126010d9c7dcb0307cb090a4b96 ""
+  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV/Main.artifacts/BombieriVinogradov.sum_primes_not_dvd_eq_li.tex" 1765154504 264 27f456f12375bdbbef3b11f49f48e8dc ""
+  "c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build/blueprint/module/BV/Main.tex" 1765154504 1838 05312a6ed47b1f2f75e6d072bc68ec1d ""
   "c:/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1761329194 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "c:/texlive/2025/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1761331608 1528 7e12f4c0fcf5a072cebdcfbfc610f54c ""
   "c:/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1761328263 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -97,4 +102,3 @@
   "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.out"
   "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.pdf"
   (rewritten before read)
-  "C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/print/print.out"
