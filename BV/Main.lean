@@ -5,10 +5,7 @@ import BV.Defs
 
 namespace BombieriVinogradov
 
-
 open ArithmeticFunction
-
-
 
 noncomputable section
 
