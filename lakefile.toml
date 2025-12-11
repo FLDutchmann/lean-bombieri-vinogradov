@@ -1,13 +1,9 @@
 name = "BV"
 version = "0.1.0"
-defaultTargets = ["bv"]
+defaultTargets = ["BV"]
 
 [[lean_lib]]
 name = "BV"
-
-[[lean_exe]]
-name = "bv"
-root = "Main"
 
 [[require]]
 name = "checkdecls"
