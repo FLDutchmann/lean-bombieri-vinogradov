@@ -37,7 +37,7 @@ noncomputable def C_BV (A : ℕ) : ℝ := sorry
 
 open Nat
 
-@[blueprint "Bombieri-Vinogradov" (uses := [sum_primes_not_dvd_eq_li]) (statement :=
+@[blueprint "Bombieri-Vinogradov" (statement :=
 /--
 For each fixed $A \geq 0$,
 $$\sum_{q \le Q} \max_{y \le x} \max_{a \in (\mathbb{Z}/q\mathbb{Z})^*} \left| \psi(y; q, a) - \frac{y}{\varphi(q)} \right| \ll_A \frac{x}{(\log x)^{A}}$$
@@ -82,7 +82,6 @@ def C : ℝ := sorry
 /--
 For $x \ge 2$, $q \in \N$ and $a \in (\Z / q\Z)^*$ we have
 $$ \max_{y \le x} \left| \Delta_{1_P}(y; q, a) \right| \ll \frac{1}{\log x} \left(\max_{\sqrt x \le y \le x} \left|\Delta_\Lambda(y; q, a)\right| + \sqrt x \right)$$
-proof. See p. 279. Uses combinatorics, an estimate on $\sum_{p \le x} 1/\log p$ and partial summation.
 -/
 )]
 theorem max_Delta_1P_le_max_Delta_Lambda : 1 = 1 := by
