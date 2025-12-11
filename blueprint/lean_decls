@@ -1,4 +1,12 @@
+Delta
+Delta_eq_sum_char
+LambdaSharp
+LambdaFlat
+LambdaLE
+Lambda_decomp
+onCoprime
 BombieriVinogradov.Delta_primeIndicator_eq
 BombieriVinogradov.sum_primes_not_dvd_eq_li
 BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda
+BombieriVinogradov.BV_Delta_Lambda
 BombieriVinogradov.bombieri_vinogradov

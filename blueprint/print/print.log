@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.10.24)  8 DEC 2025 01:42
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.10.24)  11 DEC 2025 04:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -685,6 +685,33 @@ rint/../../.lake/build/blueprint/library/BV.tex
 (c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
 /blueprint/module/BV.tex))
 (c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Defs.artifacts/Delta.tex
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 10.00107pt on input line 5.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 7.00075pt on input line 5.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 5.00053pt on input line 5.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 9.99893pt on input line 5.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 6.99925pt on input line 5.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 4.99947pt on input line 5.
+)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Defs.artifacts/Delta_eq_sum_char.tex)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Defs.artifacts/LambdaSharp.tex)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Defs.artifacts/LambdaFlat.tex)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Defs.artifacts/LambdaLE.tex)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Defs.artifacts/Lambda_decomp.tex)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Defs.artifacts/onCoprime.tex)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
 /blueprint/module/BV/Main.artifacts/BombieriVinogradov.Delta_primeIndicator_eq.
 tex)
 (c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
@@ -692,45 +719,11 @@ tex)
 .tex)
 (c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
 /blueprint/module/BV/Main.artifacts/BombieriVinogradov.max_Delta_1P_le_max_Delt
-a_Lambda.tex
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00107pt on input line 9.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00075pt on input line 9.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.00053pt on input line 9.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 9.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 9.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 4.99947pt on input line 9.
-)
+a_Lambda.tex)
 (c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
-/blueprint/module/BV/Main.artifacts/Bombieri-Vinogradov.tex
-! Missing $ inserted.
-<inserted text> 
-                $
-l.9 Apply BV_
-             Delta and absorb the error terms
-? 
-
-! LaTeX Error: Command \end{proof} invalid in math mode.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.10 \end{proof}
-                
-? 
-! Missing $ inserted.
-<inserted text> 
-                $
-l.10 \end{proof}
-                
-? 
-))
+/blueprint/module/BV/Main.artifacts/BombieriVinogradov.BV_Delta_Lambda.tex)
+(c:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/.lake/build
+/blueprint/module/BV/Main.artifacts/Bombieri-Vinogradov.tex))
 
 [1]
 (C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinogradov/blueprint/p
@@ -739,27 +732,17 @@ rint/print.aux)
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `print.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `print.out':
-(rerunfilecheck)             Before: 5C1865B3545E40519AA26506A5ED5058;309
-(rerunfilecheck)             After:  D41D8CD98F00B204E9800998ECF8427E;0.
+Package rerunfilecheck Info: File `print.out' has not changed.
+(rerunfilecheck)             Checksum: 941641B082EDDEB699AD1738E10CE39E;366.
  ) 
 Here is how much of TeX's memory you used:
- 16784 strings out of 473831
- 314036 string characters out of 5733136
- 892332 words of memory out of 5000000
- 39621 multiletter control sequences out of 15000+600000
- 564168 words of font info for 80 fonts, out of 8000000 for 9000
+ 16864 strings out of 473831
+ 322029 string characters out of 5733136
+ 905332 words of memory out of 5000000
+ 39669 multiletter control sequences out of 15000+600000
+ 564200 words of font info for 84 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 90i,6n,107p,542b,352s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,6n,107p,542b,456s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on C:/Users/Gebruiker/Desktop/Programs/lean4/lean-bombieri-vinog
 radov/blueprint/print/print.pdf (2 pages).

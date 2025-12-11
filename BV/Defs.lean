@@ -19,21 +19,20 @@ noncomputable def primeCountingAP (x : ℝ) (q : ℕ) (a : ℕ) : ℝ := sorry
 
 Decomposing the von Mangoldt function into type I and type II functions. -/
 
-/--
+@[blueprint (statement := /--
 $$\Delta_f(x ;q, a) := \sum_{n \le x, ~ n \equiv a \pmod q} f(n) ~ - \frac{1}{\varphi(q)} \sum_{n \le x, (n, q) = 1} f(n) $$
 for $x \ge 1$, $q \in \N$
--/
-@[blueprint]
+-/)]
 def Delta (f : ℕ → ℝ) (x : ℝ) (q a : ℕ) : ℝ :=
   sorry
 
 notation3 "Δ_[" f "](" x "; " q ", " a ")" => Delta f x q a
 
+@[blueprint(statement :=
 /--
 $$\Delta_f(y ;q, a) = \frac{1}{\varphi(q)} \sum_{\chi \pmod{q}, \chi \ne \chi_0} \bar\chi(a) \sum_{n \le y} f(n) \chi(n) $$
-
--/
-@[blueprint (notReady := true)]
+-/)
+ (notReady := true)]
 lemma Delta_eq_sum_char : 1 = 1 := by
   sorry
 
@@ -59,26 +58,32 @@ open ProofData
 variable [data : ProofData]
 
 -- Here $UV \le \sqrt x$ and $U, V \ge e^{\sqrt{\log x}}$, not sure how to best encode that.
+@[blueprint (statement :=
 /-- $\Lambda^\sharp = \mu_{\le V} * \log - (\Lambda_{\le U} * \mu_{\le V}) * 1$ -/
-@[blueprint]
+)]
 def LambdaSharp (n : ℕ) : ℝ := sorry
 
 notation3 "Λ♯" => LambdaSharp
 
+@[blueprint (statement :=
 /-- $\Lambda^\flat = (\Lambda_{>U} * 1) * \mu_{>V}$-/
-@[blueprint]
+)]
 def LambdaFlat (n : ℕ) : ℝ := sorry
 
 notation3 "Λ♭" => LambdaSharp
 
 /-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
-@[blueprint]
+@[blueprint (statement :=
+/-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
+)]
 def LambdaLE (U : ℝ) (n : ℕ) : ℝ := sorry
 
 notation3 "Λ≤[" U "]" => LambdaLE U
 
 /-- Decompose $\Lambda = \Lambda^\sharp + \Lambda^\flat + \Lambda_{\le U}$  -/
-@[blueprint]
+@[blueprint (statement :=
+/-- Decompose $\Lambda = \Lambda^\sharp + \Lambda^\flat + \Lambda_{\le U}$  -/
+)]
 theorem Lambda_decomp (n : ℕ) : Λ n = Λ♯ n + Λ♭ n + Λ≤[U] n := by
   sorry
 
@@ -103,7 +108,8 @@ def Nat.modEqs {q : ℕ} (a : ZMod q) : Set ℕ := {n : ℕ | n = a}
 noncomputable def ψ (x : ℝ) {q : ℕ} (a : ZMod q) : ℝ :=
     summatory ((Nat.modEqs a).indicator Λ) x
 
+@[blueprint (statement :=
 /-- For $f : \N \rightarrow \R$ and $r : \N$ we use $f_r$ to denote $n \mapsto f(n) 1_{(n, r) = 1}$-/
-@[blueprint]
+)]
 def onCoprime {R : Type*} [Zero R] (r : ℕ) (f : ℕ → R) (n : ℕ) : R :=
   if r.Coprime n then f n else 0
