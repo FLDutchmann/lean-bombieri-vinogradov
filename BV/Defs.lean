@@ -63,14 +63,16 @@ variable [data : ProofData]
 )]
 def LambdaSharp (n : ℕ) : ℝ := sorry
 
-notation3 "Λ♯" => LambdaSharp
+scoped[BV] notation3 "Λ♯" => LambdaSharp
+
+open BV
 
 @[blueprint (statement :=
 /-- $\Lambda^\flat = (\Lambda_{>U} * 1) * \mu_{>V}$-/
 )]
 def LambdaFlat (n : ℕ) : ℝ := sorry
 
-notation3 "Λ♭" => LambdaFlat
+scoped[BV] notation3 "Λ♭" => LambdaFlat
 
 /-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
 @[blueprint (statement :=
@@ -78,7 +80,7 @@ notation3 "Λ♭" => LambdaFlat
 )]
 def LambdaLE (U : ℝ) (n : ℕ) : ℝ := sorry
 
-notation3 "Λ≤[" U "]" => LambdaLE U
+scoped[BV] notation3 "Λ≤[" U "]" => LambdaLE U
 
 /-- Decompose $\Lambda = \Lambda^\sharp + \Lambda^\flat + \Lambda_{\le U}$  -/
 @[blueprint (statement :=
