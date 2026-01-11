@@ -70,7 +70,7 @@ notation3 "Λ♯" => LambdaSharp
 )]
 def LambdaFlat (n : ℕ) : ℝ := sorry
 
-notation3 "Λ♭" => LambdaSharp
+notation3 "Λ♭" => LambdaFlat
 
 /-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
 @[blueprint (statement :=
