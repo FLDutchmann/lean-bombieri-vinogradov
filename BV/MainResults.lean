@@ -2,6 +2,9 @@ import Mathlib
 import Architect
 
 import BV.Defs
+import BV.LambdaLE
+import BV.LambdaSharp
+import BV.LambdaFlat
 
 namespace BombieriVinogradov
 
@@ -24,7 +27,10 @@ For each fixed $A \ge 0$ we have
 $$\sum_{q\le Q} \max_{\sqrt x \le y \le x} \max_{a \in (\mathbb{Z}/q\mathbb{Z})^*} \left| \Delta_{\Lambda}(y; q,a) \right| \ll_A \frac{x}{(\log x)^{A}}$$
 uniformly for $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log (x))^{A+3}$
 -/
-)]
+) (proof := /--
+Follows from \ref{Lambda_decomp} and the triangle inequality, combining the bounds
+\ref{BV_LambdaLE}, \ref{BV_LambdaSharp}, and \ref{BV_LambdaFlat}.
+-/) (uses := [BV_LambdaLE, BV_LambdaSharp, BV_LambdaFlat])]
 theorem BV_Delta_Lambda : 1 = 1 := by
   sorry
 
@@ -40,7 +46,9 @@ For each fixed $A \geq 0$,
 $$\sum_{q \le Q} \max_{y \le x} \max_{a \in (\mathbb{Z}/q\mathbb{Z})^*} \left| \psi(y; q, a) - \frac{y}{\varphi(q)} \right| \ll_A \frac{x}{(\log x)^{A}}$$
 
 uniformly for all $x \ge 2$ and $1 \le Q \le \frac{\sqrt{x}}{(\log x)^{A+3}}$. -/
-)]
+) (proof := /--
+Apply \ref{BombieriVinogradov.BV_Delta_Lambda} and absorb the error terms.
+-/) (uses := [BV_Delta_Lambda])]
 theorem bombieri_vinogradov (A : ℕ) {x : ℝ} (hx : 2 ≤ x) {Q : ℝ} (hle_Q : 1 ≤ Q)
     (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
     (∑ q ∈ Nat.Icc 1 Q,
@@ -80,9 +88,11 @@ def C : ℝ := sorry
 For $x \ge 2$, $q \in \N$ and $a \in (\Z / q\Z)^*$ we have
 $$ \max_{y \le x} \left| \Delta_{1_P}(y; q, a) \right| \ll \frac{1}{\log x} \left(\max_{\sqrt x \le y \le x} \left|\Delta_\Lambda(y; q, a)\right| + \sqrt x \right)$$
 -/
-)]
+) (proof := /--
+Uses combinatorics, an estimate on $\sum_{p \le x} 1/\log p$, and partial summation.
+See Koukoulopoulos p.~279.
+-/)]
 theorem max_Delta_1P_le_max_Delta_Lambda : 1 = 1 := by
-  /-- See p. 279. Uses combinatorics, an estimate on $\sum_{p \le x} 1/\log p$ and partial summation. -/
   sorry
 
 @[blueprint (statement :=
@@ -91,7 +101,10 @@ For each fixed $A \ge 0$ we have
 $$\sum_{q\le Q} \max_{y \le x} \max_{a \in (\mathbb{Z}/q\mathbb{Z})^*} \left| \Delta_{1_P}(y; q,a) \right| \ll_A \frac{x}{(\log x)^{A+1}}$$
 uniformly for $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log (x))^{A+3}$
 -/
-)]
+) (proof := /--
+Apply \ref{BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda} and \ref{BombieriVinogradov.BV_Delta_Lambda};
+the error terms $\sum_{q \le Q} \sqrt{x}/\varphi(q) \cdot (1/\log x)$ are absorbed by $x/(\log x)^{A+1}$.
+-/)]
 theorem BV_Delta_1P : 1 = 1 := by
   sorry
 

@@ -6,6 +6,7 @@ open ArithmeticFunction
 
 
 /-- The logarithmic integral function: li(x) = ∫₂ˣ dt/(log t) -/
+@[blueprint (latexEnv := "definition") (statement := /-- $\li(x) = \int_2^x \frac{\mathrm{d}t}{\log t}$ -/)]
 noncomputable def logIntegral (x : ℝ) : ℝ := sorry
 
 /-- Prime-counting function in arithmetic progression:

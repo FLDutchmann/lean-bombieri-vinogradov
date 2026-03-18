@@ -1,29 +1,94 @@
 % In this file you should put the actual content of the blueprint.
 % It will be used both by the web and the print version.
 % It should *not* include the \begin{document}
-%
-% If you want to split the blueprint content into several files then
-% the current file can be a simple sequence of \input. Otherwise It
-% can start with a \section or \chapter for instance.
-
 
 % This makes the macros `\inputleanmodule` and `\inputleannode` available.
 \input{../../.lake/build/blueprint/library/BV}
 
+\chapter{Bombieri--Vinogradov}
 
-% See: https://github.com/hanwenzhu/LeanArchitect
+\section{Statement}
+
+The main result is the Bombieri--Vinogradov theorem, which gives a
+strong estimate for primes in arithmetic progressions on average over moduli.
+
+\inputleannode{Bombieri-Vinogradov}
+\inputleannode{BombieriVinogradov.BV_Delta_1P}
 
 \section{Assumptions}
 
-\inputleanmodule{BV.Axioms}
+We take Siegel--Walfisz and the large sieve inequality as axioms.
 
-\section {Basic Definitions}
+\inputleannode{siegel_walfisz}
+\inputleannode{large_sieve}
 
-\inputleanmodule{BV.Defs}
+\section{Definitions}
 
-\section {Final Derivations}
+\inputleannode{logIntegral}
+\inputleannode{Delta}
+\inputleannode{Delta_eq_sum_char}
+\inputleannode{onCoprime}
 
-\inputleanmodule{BV.MainResults}
+\section{Reduction to \texorpdfstring{$\Delta_\Lambda$}{Delta Lambda}}
 
-% You may also input only a single node using:
-% \inputleannode{MyNat.add}.
+Bombieri--Vinogradov for $\psi$ is reduced to a bound for $\Delta_\Lambda$
+via the following steps.
+
+\inputleannode{BombieriVinogradov.Delta_primeIndicator_eq}
+\inputleannode{BombieriVinogradov.sum_primes_not_dvd_eq_li}
+\inputleannode{BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda}
+\inputleannode{BombieriVinogradov.BV_Delta_1P}
+\inputleannode{BombieriVinogradov.BV_Delta_Lambda}
+
+\section{Vaughan's Identity}
+
+The von Mangoldt function decomposes as $\Lambda = \Lambda^\sharp + \Lambda^\flat + \Lambda_{\le U}$,
+where $UV \le \sqrt{x}$ and $U, V \ge e^{\sqrt{\log x}}$.
+
+\inputleannode{LambdaSharp}
+\inputleannode{LambdaFlat}
+\inputleannode{LambdaLE}
+\inputleannode{Lambda_decomp}
+
+\section{Small Primes (\texorpdfstring{$\Lambda_{\le U}$}{Lambda le U})}
+
+The contribution of the small part $\Lambda_{\le U}$ is bounded trivially.
+
+\inputleannode{sum_vonMangoldt_le}
+\inputleannode{Delta_LambdaLE_bound}
+\inputleannode{BV_LambdaLE}
+
+\section{Type I Sums (\texorpdfstring{$\Lambda^\sharp$}{Lambda sharp})}
+
+The sharp part $\Lambda^\sharp$ is a type I sum, bounded via Abel summation.
+
+\inputleannode{Delta_convolution_eq}
+\inputleannode{Delta_one_bound}
+\inputleannode{Delta_abel_summation}
+\inputleannode{Delta_monotone_bound}
+\inputleannode{Delta_flog_bound}
+\inputleannode{Delta_LambdaSharp_bound}
+\inputleannode{BV_LambdaSharp}
+
+\section{Type II Sums (\texorpdfstring{$\Lambda^\flat$}{Lambda flat})}
+
+\subsection{Definitions}
+
+\inputleannode{S_r}
+\inputleannode{T_r}
+
+\subsection{Reduction to character sums}
+
+\inputleannode{character_sum_by_conductor}
+\inputleannode{character_sum_Mobius}
+\inputleannode{Delta_LambdaFlat_decomp}
+\inputleannode{Delta_LambdaFlat_small_conductor}
+\inputleannode{BV_LambdaFlat_via_T}
+
+\subsection{Large sieve estimates}
+
+\inputleannode{LargeSieve_convolution}
+\inputleannode{LambdaFlat_dyadic}
+\inputleannode{BV_char_sum_bound}
+\inputleannode{T_r_bound}
+\inputleannode{BV_LambdaFlat}
