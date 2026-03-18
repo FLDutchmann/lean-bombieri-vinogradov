@@ -55,23 +55,6 @@ jobs:
       # - name: Generate upstreaming dashboard
       #   run: python3 scripts/upstreaming_dashboard.py
 
-      # Pre-populate the docbuild workspace with Mathlib .olean files from the
-      # Mathlib cache. The docgen-action script sets MATHLIB_NO_CACHE_ON_UPDATE=1
-      # which prevents `lake update` from running `lake exe cache get`, so without
-      # this step the docbuild would compile all of Mathlib from source (~6+ hours).
-      - name: Pre-populate docbuild with Mathlib oleans
-        run: |
-          DOC_GEN_REV=$(cut -d: -f2 lean-toolchain)
-          mkdir -p docbuild
-          printf 'name = "docbuild"\nreservoir = false\nversion = "0.1.0"\npackagesDir = "../.lake/packages"\n\n[[require]]\nname = "BV"\npath = "../"\n\n[[require]]\nscope = "leanprover"\nname = "doc-gen4"\nrev = "%s"\n' "$DOC_GEN_REV" > docbuild/lakefile.toml
-          # Seed docbuild with the project's locked manifest. Without this, lake update
-          # re-resolves transitive deps (e.g. plausible) to their current HEAD, producing
-          # different hashes than the Mathlib cache was built with, breaking lake exe cache get.
-          cp lake-manifest.json docbuild/lake-manifest.json
-          cd docbuild
-          ~/.elan/bin/lake update BV
-          ~/.elan/bin/lake exe cache get
-
       - name: Compile blueprint and documentation
         uses: leanprover-community/docgen-action@dac784713171529c96f6d0470f7af30249a02a5d # 2026-02-08
         with:
