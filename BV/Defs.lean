@@ -3,6 +3,7 @@ import Architect
 
 
 open ArithmeticFunction
+open scoped Moebius zeta
 
 
 /-- The logarithmic integral function: li(x) = ∫₂ˣ dt/(log t) -/
@@ -37,6 +38,22 @@ $$\Delta_f(y ;q, a) = \frac{1}{\varphi(q)} \sum_{\chi \pmod{q}, \chi \ne \chi_0}
 lemma Delta_eq_sum_char : 1 = 1 := by
   sorry
 
+@[blueprint (statement :=
+/--
+$$\Delta_{\Lambda}(x; q, a) = \psi(x; q,a) - \frac{1}{\varphi(q)} \sum_{p \le x, p \not\mid q} \log{p} $$
+-/
+)]
+theorem Delta_Lambda_eq : 1 = 1 := by
+  sorry
+
+
+@[blueprint (statement :=
+/--
+$$ \sum_{p \le x, p \not \mid q} \log{p} = x + O(xe^{-c\sqrt{\log x}}+\log q)$$
+-/
+)]
+lemma sum_primes_not_dvd_log_eq_id : 1 = 1 := by
+  sorry
 
 
 class ProofData where
@@ -52,43 +69,66 @@ class ProofData where
   le_V : Real.exp (Real.sqrt x) ≤ V
 
 
+/-- Restrict an arithmetic function to a set, setting all values outside the set to zero.
+Like `Set.indicator` but for `ArithmeticFunction`. -/
+noncomputable def ArithmeticFunction.on {R : Type*} [Zero R] (s : Set ℕ) (f : ArithmeticFunction R) :
+    ArithmeticFunction R :=
+  ⟨s.indicator f, by simp⟩
+
 section Lambda
 
 open ProofData
 
 variable [data : ProofData]
 
--- Here $UV \le \sqrt x$ and $U, V \ge e^{\sqrt{\log x}}$, not sure how to best encode that.
+/-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
+@[blueprint (statement :=
+/-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
+)]
+noncomputable def LambdaLEU [ProofData] : ArithmeticFunction ℝ :=
+  ArithmeticFunction.vonMangoldt.on (Set.Icc 1 (Nat.floor U))
+
+scoped[BV] notation3 "Λ≤U" => LambdaLEU
+
+open BV
+
+/-- $\mu{\le U} = 1_{≤ U} \cdot \mu$ -/
+@[blueprint (statement :=
+/-- $\mu_{\le U} = 1_{≤ U} \cdot \mu$ -/
+)]
+noncomputable def moebiusLEV [ProofData] : ArithmeticFunction ℝ :=
+  (μ).on (Set.Icc 1 (Nat.floor V))
+
+scoped[BV] notation3 "μ≤V" => moebiusLEV
+
+open ArithmeticFunction in
 @[blueprint (statement :=
 /-- $\Lambda^\sharp = \mu_{\le V} * \log - (\Lambda_{\le U} * \mu_{\le V}) * 1$ -/
 )]
-def LambdaSharp (n : ℕ) : ℝ := sorry
+noncomputable def LambdaSharp [ProofData] : ArithmeticFunction ℝ :=
+   μ≤V * log - Λ≤U * μ≤V * zeta
 
 scoped[BV] notation3 "Λ♯" => LambdaSharp
-
-open BV
 
 @[blueprint (statement :=
 /-- $\Lambda^\flat = (\Lambda_{>U} * 1) * \mu_{>V}$-/
 )]
-def LambdaFlat (n : ℕ) : ℝ := sorry
+noncomputable def LambdaFlat : ArithmeticFunction ℝ :=
+  (Λ - Λ≤U) * ζ * (μ - μ≤V)
 
 scoped[BV] notation3 "Λ♭" => LambdaFlat
 
-/-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
-@[blueprint (statement :=
-/-- $\Lambda_{\le U} = 1_{≤ U} \cdot \Lambda$ -/
-)]
-def LambdaLE (U : ℝ) (n : ℕ) : ℝ := sorry
-
-scoped[BV] notation3 "Λ≤[" U "]" => LambdaLE U
 
 /-- Decompose $\Lambda = \Lambda^\sharp + \Lambda^\flat + \Lambda_{\le U}$  -/
 @[blueprint (statement :=
 /-- Decompose $\Lambda = \Lambda^\sharp + \Lambda^\flat + \Lambda_{\le U}$  -/
 )]
-theorem Lambda_decomp (n : ℕ) : Λ n = Λ♯ n + Λ♭ n + Λ≤[U] n := by
-  sorry
+theorem Lambda_decomp (n : ℕ) : Λ n = Λ♯ n + Λ♭ n + Λ≤U n := by
+  simp_rw [← add_apply]
+  congr 1
+  simp [LambdaFlat, LambdaSharp, LambdaLEU, ← ArithmeticFunction.vonMangoldt_mul_zeta]
+  have : (ζ * μ) = (1 : ArithmeticFunction ℝ) := coe_zeta_mul_coe_moebius
+  grind
 
 end Lambda
 
