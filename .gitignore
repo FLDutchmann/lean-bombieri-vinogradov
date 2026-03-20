@@ -1,3 +1,6 @@
 /.lake
 
 /.claude
+
+/blueprint/web
+/blueprint/lean_decls

@@ -6,7 +6,7 @@ import BV.LambdaLE
 import BV.LambdaSharp
 import BV.LambdaFlat
 
-namespace BombieriVinogradov
+-- namespace BombieriVinogradov
 
 open ArithmeticFunction
 
@@ -50,7 +50,7 @@ $$\sum_{q \le Q} \max_{y \le x} \max_{a \in (\mathbb{Z}/q\mathbb{Z})^*} \left| \
 
 uniformly for all $x \ge 2$ and $1 \le Q \le \frac{\sqrt{x}}{(\log x)^{A+3}}$. -/
 ) (proof := /--
-Apply \ref{BombieriVinogradov.BV_Delta_Lambda} and absorb the error terms.
+Apply \ref{BV_Delta_Lambda} and absorb the error terms.
 -/) (uses := [BV_Delta_Lambda])]
 theorem bombieri_vinogradov (A : ℕ) {x : ℝ} (hx : 2 ≤ x) {Q : ℝ} (hle_Q : 1 ≤ Q)
     (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
@@ -59,7 +59,6 @@ theorem bombieri_vinogradov (A : ℕ) {x : ℝ} (hx : 2 ≤ x) {Q : ℝ} (hle_Q 
       (Nat.Icc 0 x).sup' (Nat.Icc_zero_nonempty sorry) fun y ↦
         Finset.univ.sup' Finset.univ_nonempty fun (a : ZMod q) ↦ (|ψ y a - x / φ q|))
       ≤ C_BV A * x / (Real.log x)^A := by
-  /-- Apply theorem~\ref{BombieriVinogradov.BV_Delta_Lambda} and absorb the error terms -/
   sorry
 
 end
@@ -113,4 +112,4 @@ end
 -- theorem BV_Delta_1P : 1 = 1 := by
 --   sorry
 
-end BombieriVinogradov
+-- end BombieriVinogradov

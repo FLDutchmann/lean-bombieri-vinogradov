@@ -76,7 +76,8 @@ Let $f$ and $g$ be arithmetic functions supported on $[1, M]$ and $[1, N]$ respe
 $$\sum_{q \le Q} \sumstar_{\chi \pmod{q}} \frac{q}{\varphi(q)} \max_{y \le x}\left|\sum_{n \le y} (f*g)(n)\chi(n)\right| \ll \left(\sqrt{MN} + \sqrt{M}\,Q + \sqrt{N}\,Q + Q^2\right)(\log x)\,\|f\|_2\,\|g\|_2$$
 -/) (proof := /--
 Uses Cauchy--Schwarz and the large sieve inequality (\ref{large_sieve}).
-The smooth truncation uses a version of Perron's integral formula.
+The proof in the book uses the classical version of Perron's integral formula as $1_{n \le x} = \int_{-T}^{T}\frac{(x/n)^{\alpha+it}}{\alpha+it} dt/(2\pi) + O(...)$
+But we have a different version in PNT+. I haven't worked out how this changes the proof yet.
 -/) (uses := [large_sieve])]
 theorem LargeSieve_convolution : 1 = 1 := by sorry
 
