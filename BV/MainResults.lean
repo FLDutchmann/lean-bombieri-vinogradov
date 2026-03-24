@@ -30,7 +30,7 @@ uniformly for $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log (x))^{A+3}$
 ) (proof := /--
 Follows from \ref{Lambda_decomp} and the triangle inequality, combining the bounds
 \ref{BV_LambdaLE}, \ref{BV_LambdaSharp}, and \ref{BV_LambdaFlat}.
--/) (uses := [BV_LambdaLE, BV_LambdaSharp, BV_LambdaFlat])]
+-/) (uses := [BV_LambdaLE, BV_LambdaSharp, BV_LambdaFlat, Lambda_decomp])]
 theorem BV_Delta_Lambda : (sorry : Prop) := by
   sorry
 
@@ -40,9 +40,6 @@ noncomputable def C_BV (A : ℕ) : ℝ := sorry
 
 open Nat
 
-
-
-
 @[blueprint "Bombieri-Vinogradov" (statement :=
 /--
 For each fixed $A \geq 0$,
@@ -50,8 +47,8 @@ $$\sum_{q \le Q} \max_{y \le x} \max_{a \in (\mathbb{Z}/q\mathbb{Z})^*} \left| \
 
 uniformly for all $x \ge 2$ and $1 \le Q \le \frac{\sqrt{x}}{(\log x)^{A+3}}$. -/
 ) (proof := /--
-Apply \ref{BV_Delta_Lambda} and absorb the error terms.
--/) (uses := [BV_Delta_Lambda])]
+Apply \ref{BV_Delta_Lambda} and absorb the error terms using \ref{sum_primes_not_dvd_log_eq_id}.
+-/) (uses := [BV_Delta_Lambda, sum_primes_not_dvd_log_eq_id])]
 theorem bombieri_vinogradov (A : ℕ) {x : ℝ} (hx : 2 ≤ x) {Q : ℝ} (hle_Q : 1 ≤ Q)
     (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
     (∑ q ∈ Nat.Icc 1 Q,

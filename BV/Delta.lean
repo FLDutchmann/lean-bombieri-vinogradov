@@ -89,26 +89,34 @@ lemma Delta_eq_sum_char (f : ℕ → ℝ) (y : ℝ) (q a : ℕ) [NeZero q]
 
 @[blueprint (statement :=
 /--
-$$\Delta_{\Lambda}(x; q, a) = \psi(x; q,a) - \frac{1}{\varphi(q)} \sum_{p \le x, p \not\mid q} \log{p} $$
+$$\Delta_{\Lambda}(x; q, a) = \psi(x; q,a) - \frac{1}{\varphi(q)} \sum_{n \le x, n \not\mid q} \Lambda{n} $$
 -/
 ) (notReady := true)]
-theorem Delta_Lambda_eq : (sorry : Prop) := by
+theorem Delta_Lambda_eq (x : ℝ) (q : ℕ) (a : ZMod q) :
+    Δ_[Λ](x; q, a) = ψ x a - (q.totient : ℝ)⁻¹ * ∑ n ∈ Nat.Icc 0 x with ¬ n ∣ q, Λ n
+   := by
   sorry
 
+def C_D1 : ℝ := sorry
+def c_PNT : ℝ := sorry
 
+open ProofData in
 @[blueprint (statement :=
 /--
-$$ \sum_{p \le x, p \not \mid q} \log{p} = x + O(xe^{-c\sqrt{\log x}}+\log q)$$
+$$ \sum_{n \le x, n \not \mid q} \Lambda{n} = x + O(xe^{-c\sqrt{\log x}}+\log q)$$
 -/
 )]
-lemma sum_primes_not_dvd_log_eq_id : (sorry : Prop) := by
+lemma sum_primes_not_dvd_log_eq_id [ProofData] {q : ℕ}  :
+  |summatory (fun n ↦ if ¬ n ∣ q then Λ n else 0) x - x| ≤ C_D1 * (x*Real.exp (- c_PNT * √(Real.log x)) + log q) := by
+  /-- TODO: Rephrase this in terms of an arbitrary power of log savings, so we can use the Siegel-Walfisz assumption. -/
   sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 If $f$ is an arithmetic function supported on $[1, y]$ then
 $$\Delta_{f*g}(x;\,q,\,a) = \sum_{\substack{k \le y \\ (k,q)=1}} f(k)\, \Delta_g\!\left(\frac{x}{k};\, q,\, a\bar{k}\right)$$
 -/)]
-theorem Delta_convolution_eq : (sorry : Prop) := by sorry
+theorem Delta_convolution_eq {x : ℝ} {q : ℕ} {a : ZMod q} (f g : ArithmeticFunction ℝ) (y : ℝ) (hf_support : ∀ n : ℕ, n > y → f n = 0) :
+    Δ_[f*g](x; q, a) = summatory (fun k ↦ if k.Coprime q then f k * Δ_[g](x/k; q, a * (k : ZMod q)⁻¹) else 0) y := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 For $x \ge 1$, $q \in \N$ and $a \in (\Z/q\Z)^*$,
@@ -118,7 +126,7 @@ Carefully consider length $q$ intervals. Alternatively, write
 $$\Delta_1(t;\, q,\, a) = \frac{1}{\varphi(q)} \sum_{a' \in (\Z/q\Z)^*} \left( \sum_{\substack{n \le t \\ n \equiv a \pmod{q}}} 1 - \sum_{\substack{n \le t \\ n \equiv a' \pmod{q}}} 1 \right)$$
 and note each inner difference is bounded by $1$ in absolute value.
 -/)]
-theorem Delta_one_bound : (sorry : Prop) := by sorry
+theorem Delta_one_bound {x : ℝ} {q : ℕ} {a : ZMod q} (ha : IsUnit a) : |Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a)| ≤ 1 := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 If $g$ is continuously differentiable on $[1, x]$ then
@@ -126,18 +134,20 @@ $$\Delta_g(x;\,q,\,a) = \Delta_1(x;\,q,\,a)\,g(x) - \int_1^x \Delta_1(t;\,q,\,a)
 -/) (proof := /--
 By Abel summation.
 -/) (uses := [Delta_one_bound])]
-theorem Delta_abel_summation : (sorry : Prop) := by sorry
+theorem Delta_abel_summation {q : ℕ} {a : ZMod q} (g g': ℝ → ℝ) {x : ℝ} (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) (hg' : ∀ t ∈ Set.Icc 1 x, HasDerivAt g (g' t) t) :
+    Δ_[fun n ↦ g n](x; q, a) = Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a) - ∫ t in 1..x, Δ_[(ζ : ArithmeticFunction ℝ)](t; q, a) * g' t := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
-If $g$ is continuously differentiable and monotone on $[1, y]$ with $g(0) = 0$, then for all $t \ge 1$ and $a \in (\Z/q\Z)^*$,
-$$|\Delta_g(x;\, q,\, a)| \le 2g(t)$$
+If $g$ is continuously differentiable and monotone on $[1, x]$ with $g(0) = 0$, then for all $t \ge 1$ and $a \in (\Z/q\Z)^*$,
+$$|\Delta_g(x;\, q,\, a)| \le 2g(x)$$
 -/) (uses := [Delta_one_bound, Delta_abel_summation])]
-theorem Delta_monotone_bound : (sorry : Prop) := by sorry
+theorem Delta_monotone_bound {q : ℕ} {a : ZMod q} (g : ℝ → ℝ) {x : ℝ} (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) :
+    |Δ_[fun n ↦ g n](x; q, a)| ≤ 2 * g x := by sorry
 
 @[blueprint (statement := /--
-Let $v \ge 0$ and let $f$ be an arithmetic function supported on $[1, y]$. For $x \ge 2$, $q \in \N$ and $a \in (\Z/q\Z)^*$,
-$$|\Delta_{f * \log^v}(x;\, q,\, a)| \le 2(\log x)^v \sum_{k \le y} |f(k)|$$
+Let $v \ge 0$ and let $f$ be an arithmetic function supported on $[1, x]$. For $x \ge 2$, $q \in \N$ and $a \in (\Z/q\Z)^*$,
+$$|\Delta_{f * \log^v}(x;\, q,\, a)| \le 2(\log x)^v \sum_{k \le x} |f(k)|$$
 -/) (proof := /--
 Straightforward application of the previous lemmas.
 -/) (uses := [Delta_one_bound, Delta_abel_summation, Delta_monotone_bound])]
-theorem Delta_flog_bound : (sorry : Prop) := by sorry
+theorem Delta_flog_bound {v : ℕ} {f : ArithmeticFunction ℝ} {x : ℝ} (hx : 2 ≤ x) {q : ℕ} (a : ZMod q) (ha : IsUnit a) : Δ_[f * ppow log v](x; q, a) ≤ 2 * (Real.log x)^v * summatory (fun k ↦ |f k|) x := by sorry
