@@ -1,6 +1,6 @@
 import Mathlib
 import Architect
-import BV.Defs
+import BV.Delta
 
 set_option autoImplicit false
 
