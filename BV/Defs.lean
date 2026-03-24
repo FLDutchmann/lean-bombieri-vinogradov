@@ -195,8 +195,8 @@ lemma Delta_eq_sum_char (f : ℕ → ℝ) (y : ℝ) (q a : ℕ) [NeZero q]
 /--
 $$\Delta_{\Lambda}(x; q, a) = \psi(x; q,a) - \frac{1}{\varphi(q)} \sum_{p \le x, p \not\mid q} \log{p} $$
 -/
-)]
-theorem Delta_Lambda_eq : 1 = 1 := by
+) (notReady := true)]
+theorem Delta_Lambda_eq : (sorry : Prop) := by
   sorry
 
 
@@ -205,7 +205,7 @@ theorem Delta_Lambda_eq : 1 = 1 := by
 $$ \sum_{p \le x, p \not \mid q} \log{p} = x + O(xe^{-c\sqrt{\log x}}+\log q)$$
 -/
 )]
-lemma sum_primes_not_dvd_log_eq_id : 1 = 1 := by
+lemma sum_primes_not_dvd_log_eq_id : (sorry : Prop) := by
   sorry
 
 
@@ -249,6 +249,40 @@ theorem ProofData.U_le_x : U ≤ x := by
       constructor
       · exact x_nonneg
       · exact le_self_pow₀ (by linarith only [le_x]) (by norm_num)
+
+theorem Nat.Icc_sqrt_nonempty : (Nat.Icc (√x) x).Nonempty := by
+  by_cases hx : 4 ≤ x
+  · use ⌊x⌋₊
+    simp only [mem_Icc]
+    constructor
+    · trans x - 1
+      · rw [Real.sqrt_le_iff]
+        have := le_x
+        constructor
+        · linarith
+        · apply le_of_sub_nonneg
+          nlinarith
+      · simp only [tsub_le_iff_right]
+        apply le_of_lt
+        apply Nat.lt_floor_add_one
+    · apply Nat.floor_le (x_nonneg)
+  · use 2
+    simp only [mem_Icc, cast_ofNat]
+    constructor
+    · rw [Real.sqrt_le_iff]
+      norm_num
+      linarith
+    · exact le_x
+
+private theorem maxya.extracted_3 (q : ℕ) (h : NeZero q) : (Nat.Icc (√x) x ×ˢ (Finset.univ : Finset (ZMod q)ˣ)).Nonempty := by
+  simp [Nat.Icc_sqrt_nonempty]
+
+/-- The maximum of $f$ over all $y \in \left[\sqrt{x}, x\right]$ and $a \in (\mathbb{Z} / q\mathbb{Z})^* -/
+noncomputable def maxya [ProofData] (q : ℕ) (f : ℕ → ZMod q → ℝ) : ℝ :=
+open Classical in
+  if h : NeZero q then
+    ((Nat.Icc (√x) x) ×ˢ (Finset.univ : Finset (ZMod q)ˣ)).sup' (maxya.extracted_3 q h) (fun ⟨n, a⟩ ↦ f n a)
+  else 0
 
 /-- Restrict an arithmetic function to a set, setting all values outside the set to zero.
 Like `Set.indicator` but for `ArithmeticFunction`. -/
@@ -340,5 +374,7 @@ theorem Lambda_decomp (n : ℕ) : Λ n = Λ♯ n + Λ♭ n + Λ≤U n := by
   simp [LambdaFlat, LambdaSharp, LambdaLEU, ← ArithmeticFunction.vonMangoldt_mul_zeta]
   have : (ζ * μ) = (1 : ArithmeticFunction ℝ) := coe_zeta_mul_coe_moebius
   grind
+
+
 
 end Lambda

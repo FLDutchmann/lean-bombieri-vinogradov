@@ -58,4 +58,7 @@ theorem Delta_LambdaLEU_bound [ProofData] {y : ℝ} {q : ℕ} {a : ZMod q} :
 For each fixed $A \ge 0$, $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log x)^{A+3}$,
 $$\sum_{q \le Q} \max_{\sqrt{x} \le y \le x} \max_{a \in (\Z/q\Z)^*} |\Delta_{\Lambda_{\le U}}(y;\,q,\,a)| \le Q\sqrt{x} \ll_A \frac{x}{(\log x)^{A+2}}$$
 -/) (uses := [Delta_LambdaLEU_bound])]
-theorem BV_LambdaLE : 1 = 1 := by sorry
+theorem BV_LambdaLE [ProofData] {A : ℕ} (Q : ℝ) (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
+    ∑ q ∈ Nat.Icc 0 Q, maxya q (fun y a ↦ Δ_[Λ≤U](y; q, a)) ≤
+      2 * x / (Real.log x)^(A+2) := by
+  sorry

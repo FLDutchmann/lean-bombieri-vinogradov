@@ -31,7 +31,7 @@ uniformly for $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log (x))^{A+3}$
 Follows from \ref{Lambda_decomp} and the triangle inequality, combining the bounds
 \ref{BV_LambdaLE}, \ref{BV_LambdaSharp}, and \ref{BV_LambdaFlat}.
 -/) (uses := [BV_LambdaLE, BV_LambdaSharp, BV_LambdaFlat])]
-theorem BV_Delta_Lambda : 1 = 1 := by
+theorem BV_Delta_Lambda : (sorry : Prop) := by
   sorry
 
 
@@ -72,7 +72,7 @@ end
 -- $$\Delta_{1_P}(x; q, a) = \pi(x; q,a) - \frac{1}{\varphi(q)} \sum_{p \le x, p \not\mid q} 1 $$
 -- -/
 -- )]
--- theorem Delta_primeIndicator_eq : 1 = 1 := by
+-- theorem Delta_primeIndicator_eq : (sorry : Prop) := by
 --   sorry
 
 
@@ -81,7 +81,7 @@ end
 -- $$ \sum_{p \le x, p \not \mid q} 1 = li(x) + O(xe^{-c\sqrt{\log x}}+\log q)$$
 -- -/
 -- )]
--- lemma sum_primes_not_dvd_eq_li : 1 = 1 := by
+-- lemma sum_primes_not_dvd_eq_li : (sorry : Prop) := by
 --   sorry
 
 -- def C : ℝ := sorry
@@ -96,7 +96,7 @@ end
 -- Uses combinatorics, an estimate on $\sum_{p \le x} 1/\log p$, and partial summation.
 -- See Koukoulopoulos p.~279.
 -- -/)]
--- theorem max_Delta_1P_le_max_Delta_Lambda : 1 = 1 := by
+-- theorem max_Delta_1P_le_max_Delta_Lambda : (sorry : Prop) := by
 --   sorry
 
 -- @[blueprint (statement :=
@@ -109,7 +109,7 @@ end
 -- Apply \ref{BombieriVinogradov.max_Delta_1P_le_max_Delta_Lambda} and \ref{BombieriVinogradov.BV_Delta_Lambda};
 -- the error terms $\sum_{q \le Q} \sqrt{x}/\varphi(q) \cdot (1/\log x)$ are absorbed by $x/(\log x)^{A+1}$.
 -- -/)]
--- theorem BV_Delta_1P : 1 = 1 := by
+-- theorem BV_Delta_1P : (sorry : Prop) := by
 --   sorry
 
 -- end BombieriVinogradov

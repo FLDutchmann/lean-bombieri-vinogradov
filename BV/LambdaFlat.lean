@@ -25,7 +25,7 @@ noncomputable def T_r : ℝ := sorry
 This is a standard result. Let $f$ be a function from Dirichlet characters. Then
 $$\sum_{\substack{\chi \pmod{q} \\ \chi \ne \chi_0}} f(\chi) = \sum_{d \mid q} \sumstar_{\xi \pmod{d}} f(1_{(n,q)=1}\xi)$$
 -/)]
-theorem character_sum_by_conductor : 1 = 1 := by sorry
+theorem character_sum_by_conductor : (sorry : Prop) := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 Let $f$ be an arithmetic function. For $r \le x$, $q > 1$ and $(a, q) = 1$,
@@ -41,12 +41,12 @@ By Möbius inversion,
 $$G_P(q) = \sum_{d \mid q} \mu(q/d)\, F_P(d) = \sum_{d \mid q} \mu(q/d)\, \Delta_{f_{rP}}(y;\, d,\, a).$$
 Set $P = q$ to conclude.
 -/) (uses := [character_sum_by_conductor])]
-theorem character_sum_Mobius : 1 = 1 := by sorry
+theorem character_sum_Mobius : (sorry : Prop) := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 $$\left|\Delta_{\Lambda^\flat}(y;\, q,\, a)\right| \le \frac{1}{\varphi(q)} \left|\sum_{\substack{d \mid q \\ 1 < d \le (\log x)^C}} \sum_{s \mid d} \mu(d/s)\,\varphi(s)\,\Delta_{\Lambda^\flat_q}(y;\,s,\,a)\right| + \frac{1}{\varphi(q)} \sum_{\substack{d \mid q \\ d > (\log x)^C}} \sumstar_{\xi \pmod{d}} S_{q/d}(y, \xi)$$
 -/) (uses := [character_sum_by_conductor, character_sum_Mobius, S_r])]
-theorem Delta_LambdaFlat_decomp : 1 = 1 := by sorry
+theorem Delta_LambdaFlat_decomp : (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--
 $$\frac{1}{\varphi(q)} \left|\sum_{\substack{d \mid q \\ 1 < d \le (\log x)^C}} \sum_{s \mid d} \mu(d/s)\,\varphi(s)\,\Delta_{\Lambda^\flat_q}(y;\,s,\,a)\right| \ll_{A,C} \frac{x}{\varphi(q)\,(\log x)^{A+1}}$$
@@ -59,7 +59,7 @@ Push the absolute values inside, then
 &\ll \frac{x}{(\log x)^{A+1}}.
 \end{align*}
 -/) (uses := [Delta_LambdaFlat_decomp, siegel_walfisz])]
-theorem Delta_LambdaFlat_small_conductor : 1 = 1 := by sorry
+theorem Delta_LambdaFlat_small_conductor : (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--
 $$\sum_{q \le Q} \max_{\substack{\sqrt{x} \le y \le x \\ a \in (\Z/q\Z)^*}} \left|\Delta_{\Lambda^\flat}(y;\,q,\,a)\right| \le \sum_{r \le Q} \frac{T_r(x,Q)}{\varphi(r)} + O\!\left(\frac{x}{(\log x)^A}\right)$$
@@ -67,7 +67,7 @@ $$\sum_{q \le Q} \max_{\substack{\sqrt{x} \le y \le x \\ a \in (\Z/q\Z)^*}} \lef
 Sum the error from \ref{Delta_LambdaFlat_small_conductor} over $q \le Q$ using
 $\sum_{n \le x} 1/\varphi(n) \ll \log x$, then regroup the main sum by $r = q/d$.
 -/) (uses := [Delta_LambdaFlat_decomp, Delta_LambdaFlat_small_conductor, character_sum_Mobius, T_r])]
-theorem BV_LambdaFlat_via_T : 1 = 1 := by sorry
+theorem BV_LambdaFlat_via_T : (sorry : Prop) := by sorry
 
 /-! ### Large sieve estimates -/
 
@@ -79,13 +79,13 @@ Uses Cauchy--Schwarz and the large sieve inequality (\ref{large_sieve}).
 The proof in the book uses the classical version of Perron's integral formula as $1_{n \le x} = \int_{-T}^{T}\frac{(x/n)^{\alpha+it}}{\alpha+it} dt/(2\pi) + O(...)$
 But we have a different version in PNT+. I haven't worked out how this changes the proof yet.
 -/) (uses := [large_sieve])]
-theorem LargeSieve_convolution : 1 = 1 := by sorry
+theorem LargeSieve_convolution : (sorry : Prop) := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 $$\Lambda^\flat(n) = \sum_{U < 2^j \le 2x/V} (f_j * g_j)(n) \quad \text{for } n \le x,$$
 where $f_j(k) = (\Lambda_{>U} * 1)(k)\,1_{2^{j-1} < k \le 2^j}$ and $g_j(\ell) = \mu(\ell)\,1_{V < \ell \le x/2^{j-1}}$.
 -/)]
-theorem LambdaFlat_dyadic : 1 = 1 := by sorry
+theorem LambdaFlat_dyadic : (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--
 For $x, Q \ge 2$, $U, V \in [1, x]$ and $r \in \N$,
@@ -95,14 +95,14 @@ Apply the dyadic decomposition \ref{LambdaFlat_dyadic} (restricted to integers c
 and apply \ref{LargeSieve_convolution} to each dyadic piece.
 When summing over $j$ note $U \le 2^j$, so $\sum_{U \le 2^j} 2^{-j/2} \ll 1/\sqrt{U}$.
 -/) (uses := [LargeSieve_convolution, LambdaFlat_dyadic, S_r])]
-theorem BV_char_sum_bound : 1 = 1 := by sorry
+theorem BV_char_sum_bound : (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--
 $$T_r(x,Q) \ll \frac{x}{(\log x)^{C-3}} + \frac{x(\log x)^4}{\sqrt{U}} + \frac{x(\log x)^4}{\sqrt{V}} + \frac{Q\sqrt{x}\,(\log x)^3}{r}$$
 -/) (proof := /--
 Divide the sum defining $T_r$ into dyadic intervals in $d$ and apply \ref{BV_char_sum_bound}.
 -/) (uses := [BV_char_sum_bound, LambdaFlat_dyadic, T_r])]
-theorem T_r_bound : 1 = 1 := by sorry
+theorem T_r_bound : (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--
 For each fixed $A \ge 0$, $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log x)^{A+3}$,
@@ -111,4 +111,4 @@ $$\sum_{q \le Q} \max_{\sqrt{x} \le y \le x} \max_{a \in (\Z/q\Z)^*} \left|\Delt
 Plug the bound from \ref{T_r_bound} into \ref{BV_LambdaFlat_via_T},
 then choose $U = V = e^{\sqrt{\log x}}$ and $C = A + 4$.
 -/) (uses := [BV_LambdaFlat_via_T, T_r_bound, Delta_LambdaFlat_small_conductor])]
-theorem BV_LambdaFlat : 1 = 1 := by sorry
+theorem BV_LambdaFlat : (sorry : Prop) := by sorry
