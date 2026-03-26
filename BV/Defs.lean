@@ -176,15 +176,16 @@ theorem Nat.Icc_sqrt_nonempty : (Nat.Icc (√x) x).Nonempty := by
       linarith
     · exact le_x
 
-private theorem maxya.extracted_3 (q : ℕ) (h : NeZero q) : (Nat.Icc (√x) x ×ˢ (Finset.univ : Finset (ZMod q)ˣ)).Nonempty := by
-  simp [Nat.Icc_sqrt_nonempty]
 
+noncomputable def maxy [ProofData] (f : ℝ → ℝ) : ℝ :=  ⨆ y ∈ Set.Icc (√ x) x, f y
+
+-- private theorem maxya.extracted_3 (q : ℕ) (h : NeZero q) : (Nat.Icc (√x) x ×ˢ (Finset.univ : Finset (ZMod q)ˣ)).Nonempty := by
+--   simp [Nat.Icc_sqrt_nonempty]
+
+-- TODO : We're taking the maximum over the naturals in [√x, x], but really we should use reals.
 /-- The maximum of $f$ over all $y \in \left[\sqrt{x}, x\right]$ and $a \in (\mathbb{Z} / q\mathbb{Z})^* -/
-noncomputable def maxya [ProofData] (q : ℕ) (f : ℕ → ZMod q → ℝ) : ℝ :=
-open Classical in
-  if h : NeZero q then
-    ((Nat.Icc (√x) x) ×ˢ (Finset.univ : Finset (ZMod q)ˣ)).sup' (maxya.extracted_3 q h) (fun ⟨n, a⟩ ↦ f n a)
-  else 0
+noncomputable def maxya [ProofData] (q : ℕ) (f : ℝ → ZMod q → ℝ) : ℝ :=
+  ⨆ a : (ZMod q)ˣ, maxy (fun y ↦ f y a )
 
 /-- Restrict an arithmetic function to a set, setting all values outside the set to zero.
 Like `Set.indicator` but for `ArithmeticFunction`. -/
