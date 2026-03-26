@@ -1,9 +1,10 @@
 import Mathlib
 import Architect
-import BV.Defs
+import BV.Delta
 import BV.Axioms
 
-open ArithmeticFunction
+open ArithmeticFunction BV ProofData
+open scoped Moebius BV
 
 /-! ## Type II sums: the flat part $\Lambda^\flat$ -/
 
@@ -11,13 +12,19 @@ open ArithmeticFunction
 @[blueprint (latexEnv := "definition") (statement := /--
 $$S_r(y, \xi) := \left|\sum_{n \le y} \Lambda_r^\flat(n)\,\xi(n)\right|$$
 -/)]
-noncomputable def S_r : ℝ := sorry
+noncomputable def S [ProofData] {q : ℕ} (r : ℕ) (y : ℝ) (ξ : DirichletCharacter ℂ q) : ℝ :=
+    ‖summatory (fun n ↦ onCoprime r Λ♭ n * ξ n) y‖
 
+-- TODO: Figure out how we want to handle C here: ideally we don't have to pass it explicitly every time.
+-- TODO: We're using Nat.Icc while the definition of T is left-open. Consider if we want to define and use Nat.Ioc instead
+-- TODO: We're taking the maximum over y _and_ a, while the function is constant in a. We should really define a maxy as its own thing.
 /-- $T_r(x, Q) := \sum_{(\log x)^C < d \le Q/r} \frac{1}{\varphi(d)} \sum_{\xi \pmod{d}}^* \max_{\sqrt{x} \le y \le x} S_r(y, \xi)$ -/
 @[blueprint (latexEnv := "definition") (statement := /--
 $$T_r(x, Q) := \sum_{(\log x)^C < d \le Q/r} \frac{1}{\varphi(d)} \sumstar_{\xi \pmod{d}} \max_{\sqrt{x} \le y \le x} S_r(y, \xi)$$
--/) (uses := [S_r])]
-noncomputable def T_r : ℝ := sorry
+-/) (uses := [S])]
+noncomputable def T [ProofData] (C : ℝ) (r : ℕ) (Q : ℝ) : ℝ :=
+  open Classical in
+    ∑ d ∈ Nat.Icc ((Real.log x)^C) (Q/r), (d.totient : ℝ)⁻¹ * ∑ ξ : DirichletCharacter ℂ d with ξ.IsPrimitive, maxya 1 (fun y _ ↦ S r y ξ)
 
 /-! ### Reduction to character sums -/
 
@@ -25,7 +32,10 @@ noncomputable def T_r : ℝ := sorry
 This is a standard result. Let $f$ be a function from Dirichlet characters. Then
 $$\sum_{\substack{\chi \pmod{q} \\ \chi \ne \chi_0}} f(\chi) = \sum_{d \mid q} \sumstar_{\xi \pmod{d}} f(1_{(n,q)=1}\xi)$$
 -/)]
-theorem character_sum_by_conductor : (sorry : Prop) := by sorry
+theorem character_sum_by_conductor {R : Type*} [AddCommMonoid R] {q : ℕ} (f : DirichletCharacter ℂ q → R) :
+  open Classical in
+    ∑ χ : DirichletCharacter ℂ q with χ ≠ 1, f χ = ∑ d ∈ q.divisors.attach, ∑ ξ : DirichletCharacter ℂ d with ξ.IsPrimitive, f (ξ.changeLevel (Nat.dvd_of_mem_divisors d.2)) := by
+  sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 Let $f$ be an arithmetic function. For $r \le x$, $q > 1$ and $(a, q) = 1$,
@@ -41,12 +51,19 @@ By Möbius inversion,
 $$G_P(q) = \sum_{d \mid q} \mu(q/d)\, F_P(d) = \sum_{d \mid q} \mu(q/d)\, \Delta_{f_{rP}}(y;\, d,\, a).$$
 Set $P = q$ to conclude.
 -/) (uses := [character_sum_by_conductor])]
-theorem character_sum_Mobius : (sorry : Prop) := by sorry
+theorem character_sum_Mobius (f : ArithmeticFunction ℝ) {r q : ℕ} {x : ℝ} {a : ZMod q} (hq : 1 < q) (hrx : r ≤ x) (ha : IsUnit a) :
+  open Classical in
+    ∑ ξ : DirichletCharacter ℂ q with ξ.IsPrimitive, star (ξ a) * summatory (fun n ↦ ξ n * onCoprime r f n) x =
+      ∑ p ∈ q.divisorsAntidiagonal, μ p.2 * p.1.totient * Δ_[onCoprime (r*q) f](x; q, a) := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 $$\left|\Delta_{\Lambda^\flat}(y;\, q,\, a)\right| \le \frac{1}{\varphi(q)} \left|\sum_{\substack{d \mid q \\ 1 < d \le (\log x)^C}} \sum_{s \mid d} \mu(d/s)\,\varphi(s)\,\Delta_{\Lambda^\flat_q}(y;\,s,\,a)\right| + \frac{1}{\varphi(q)} \sum_{\substack{d \mid q \\ d > (\log x)^C}} \sumstar_{\xi \pmod{d}} S_{q/d}(y, \xi)$$
--/) (uses := [character_sum_by_conductor, character_sum_Mobius, S_r])]
-theorem Delta_LambdaFlat_decomp : (sorry : Prop) := by sorry
+-/) (uses := [character_sum_by_conductor, character_sum_Mobius, S])]
+theorem Delta_LambdaFlat_decomp [ProofData] {C : ℕ} {y : ℝ} (q : ℕ) (a : ZMod q) (ha : IsUnit a)  :
+  |Δ_[Λ♭](y; q, a)| ≤ (q.totient : ℝ)⁻¹ * |∑ d ∈ q.divisors with 1 < (d : ℕ) ∧ ↑d ≤ (Real.log x)^C, ∑ p ∈ d.divisorsAntidiagonal, μ p.2 * p.1.totient * Δ_[onCoprime q Λ♭](y; p.1, a.cast)| := by sorry
+
+
+def C_DLF (A C : ℝ) : ℝ := sorry
 
 @[blueprint (statement := /--
 $$\frac{1}{\varphi(q)} \left|\sum_{\substack{d \mid q \\ 1 < d \le (\log x)^C}} \sum_{s \mid d} \mu(d/s)\,\varphi(s)\,\Delta_{\Lambda^\flat_q}(y;\,s,\,a)\right| \ll_{A,C} \frac{x}{\varphi(q)\,(\log x)^{A+1}}$$
@@ -59,14 +76,15 @@ Push the absolute values inside, then
 &\ll \frac{x}{(\log x)^{A+1}}.
 \end{align*}
 -/) (uses := [Delta_LambdaFlat_decomp, siegel_walfisz])]
-theorem Delta_LambdaFlat_small_conductor : (sorry : Prop) := by sorry
+theorem Delta_LambdaFlat_small_conductor [ProofData] (A C : ℕ) {y : ℝ} (q : ℕ) (a : ZMod q) (ha : IsUnit a) :
+    (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--
 $$\sum_{q \le Q} \max_{\substack{\sqrt{x} \le y \le x \\ a \in (\Z/q\Z)^*}} \left|\Delta_{\Lambda^\flat}(y;\,q,\,a)\right| \le \sum_{r \le Q} \frac{T_r(x,Q)}{\varphi(r)} + O\!\left(\frac{x}{(\log x)^A}\right)$$
 -/) (proof := /--
 Sum the error from \ref{Delta_LambdaFlat_small_conductor} over $q \le Q$ using
 $\sum_{n \le x} 1/\varphi(n) \ll \log x$, then regroup the main sum by $r = q/d$.
--/) (uses := [Delta_LambdaFlat_decomp, Delta_LambdaFlat_small_conductor, character_sum_Mobius, T_r])]
+-/) (uses := [Delta_LambdaFlat_decomp, Delta_LambdaFlat_small_conductor, character_sum_Mobius, T])]
 theorem BV_LambdaFlat_via_T : (sorry : Prop) := by sorry
 
 /-! ### Large sieve estimates -/
@@ -94,14 +112,14 @@ $$\sum_{q \le Q} \sumstar_{\chi \pmod{q}} \frac{q}{\varphi(q)}\, S_r(y, \chi) \l
 Apply the dyadic decomposition \ref{LambdaFlat_dyadic} (restricted to integers coprime to $r$)
 and apply \ref{LargeSieve_convolution} to each dyadic piece.
 When summing over $j$ note $U \le 2^j$, so $\sum_{U \le 2^j} 2^{-j/2} \ll 1/\sqrt{U}$.
--/) (uses := [LargeSieve_convolution, LambdaFlat_dyadic, S_r])]
+-/) (uses := [LargeSieve_convolution, LambdaFlat_dyadic, S])]
 theorem BV_char_sum_bound : (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--
 $$T_r(x,Q) \ll \frac{x}{(\log x)^{C-3}} + \frac{x(\log x)^4}{\sqrt{U}} + \frac{x(\log x)^4}{\sqrt{V}} + \frac{Q\sqrt{x}\,(\log x)^3}{r}$$
 -/) (proof := /--
 Divide the sum defining $T_r$ into dyadic intervals in $d$ and apply \ref{BV_char_sum_bound}.
--/) (uses := [BV_char_sum_bound, LambdaFlat_dyadic, T_r])]
+-/) (uses := [BV_char_sum_bound, LambdaFlat_dyadic, T])]
 theorem T_r_bound : (sorry : Prop) := by sorry
 
 @[blueprint (statement := /--

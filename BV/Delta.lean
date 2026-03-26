@@ -15,9 +15,9 @@ Decomposing the von Mangoldt function into type I and type II functions. -/
 $$\Delta_f(x ;q, a) := \sum_{n \le x, ~ n \equiv a \pmod q} f(n) ~ - \frac{1}{\varphi(q)} \sum_{n \le x, (n, q) = 1} f(n) $$
 for $x \ge 1$, $q \in \N$
 -/)]
-noncomputable def Delta (f : ℕ → ℝ) (x : ℝ) (q : ℕ) (a : ZMod q) : ℝ :=
+noncomputable def Delta {R : Type*} [Field R] (f : ℕ → R) (x : ℝ) (q : ℕ) (a : ZMod q) : R :=
   summatory ((Nat.modEqs (a : ZMod q)).indicator f) x -
-  (1 / (Nat.totient q : ℝ)) * summatory (onCoprime q f) x
+  (1 / (Nat.totient q : R)) * summatory (onCoprime q f) x
 
 theorem DirichletCharacter.inv_zmod_apply {q : ℕ} {a : ZMod q} (ha : IsUnit a)
     (χ : DirichletCharacter ℂ q) : χ⁻¹ a = χ a⁻¹ := by
@@ -41,7 +41,7 @@ $$\Delta_f(y ;q, a) = \frac{1}{\varphi(q)} \sum_{\chi \pmod{q}, \chi \ne \chi_0}
 lemma Delta_eq_sum_char (f : ℕ → ℝ) (y : ℝ) (q a : ℕ) [NeZero q]
     (ha : IsUnit (a : ZMod q)) :
     open Classical in
-    (Delta f y q a : ℂ) = (1 / (Nat.totient q : ℂ)) *
+    (↑(Delta f y q a) : ℂ) = (1 / (Nat.totient q : ℂ)) *
       ∑ χ : DirichletCharacter ℂ q, if χ ≠ 1 then
         star (χ (a : ZMod q)) * summatory (fun n => (f n : ℂ) * χ n) y
       else 0 := by
