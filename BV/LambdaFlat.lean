@@ -17,7 +17,6 @@ noncomputable def S [ProofData] {q : ℕ} (r : ℕ) (y : ℝ) (ξ : DirichletCha
 
 -- TODO: Figure out how we want to handle C here: ideally we don't have to pass it explicitly every time.
 -- TODO: We're using Nat.Icc while the definition of T is left-open. Consider if we want to define and use Nat.Ioc instead
--- TODO: We're taking the maximum over y _and_ a, while the function is constant in a. We should really define a maxy as its own thing.
 /-- $T_r(x, Q) := \sum_{(\log x)^C < d \le Q/r} \frac{1}{\varphi(d)} \sum_{\xi \pmod{d}}^* \max_{\sqrt{x} \le y \le x} S_r(y, \xi)$ -/
 @[blueprint (latexEnv := "definition") (statement := /--
 $$T_r(x, Q) := \sum_{(\log x)^C < d \le Q/r} \frac{1}{\varphi(d)} \sumstar_{\xi \pmod{d}} \max_{\sqrt{x} \le y \le x} S_r(y, \xi)$$
@@ -149,12 +148,18 @@ theorem BV_char_sum_bound [ProofData] (r : ℕ) (Q : ℝ) (hQ : 2 ≤ Q) :
       q * (q.totient : ℝ)⁻¹ * maxy (fun y ↦ S r y ξ)) Q
     ≤ C_BV_char_sum * (x + Q * x / Real.sqrt U + Q * x / Real.sqrt V + Q ^ 2 * Real.sqrt x) * (Real.log x) ^ 3 := by sorry
 
+def C_Tr : ℝ := sorry
+
 @[blueprint (statement := /--
 $$T_r(x,Q) \ll \frac{x}{(\log x)^{C-3}} + \frac{x(\log x)^4}{\sqrt{U}} + \frac{x(\log x)^4}{\sqrt{V}} + \frac{Q\sqrt{x}\,(\log x)^3}{r}$$
 -/) (proof := /--
 Divide the sum defining $T_r$ into dyadic intervals in $d$ and apply \ref{BV_char_sum_bound}.
 -/) (uses := [BV_char_sum_bound, LambdaFlat_dyadic, T])]
-theorem T_r_bound : (sorry : Prop) := by sorry
+theorem T_r_bound [ProofData] (C : ℕ) (r : ℕ) (Q : ℝ) (hQ : 2 ≤ Q) :
+    T C r Q ≤ C_Tr * (x / (Real.log x)^(C-3) + x * (Real.log x)^4 * √U + x * (Real.log x)^4 * √V + Q * √x * (Real.log x)^3 / r)
+ := by sorry
+
+def C_BV_LF (A : ℝ) : ℝ := sorry
 
 @[blueprint (statement := /--
 For each fixed $A \ge 0$, $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log x)^{A+3}$,
@@ -163,4 +168,7 @@ $$\sum_{q \le Q} \max_{\sqrt{x} \le y \le x} \max_{a \in (\Z/q\Z)^*} \left|\Delt
 Plug the bound from \ref{T_r_bound} into \ref{BV_LambdaFlat_via_T},
 then choose $U = V = e^{\sqrt{\log x}}$ and $C = A + 4$.
 -/) (uses := [BV_LambdaFlat_via_T, T_r_bound, Delta_LambdaFlat_small_conductor])]
-theorem BV_LambdaFlat : (sorry : Prop) := by sorry
+theorem BV_LambdaFlat [ProofData] (A : ℕ) (Q : ℝ) (h1Q : 1 ≤ Q) (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
+    ∑ q ∈ Nat.Icc 0 Q, maxya q (fun y a ↦ Δ_[Λ♭](y; q, a)) ≤
+      C_BV_LF A * x / (Real.log x)^A := by
+  sorry

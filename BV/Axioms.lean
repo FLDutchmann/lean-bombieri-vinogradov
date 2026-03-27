@@ -23,10 +23,16 @@ axiom siegel_walfisz (A : ℕ) (C : ℕ) {x : ℝ} (hx : 2 ≤ x)
   |ψ x a - x / φ q| ≤ C_SW A C * x / (Real.log x) ^ A
 
 
+axiom C_LS : ℝ
+
+/- Note: We avoid phrasing this axiom in terms of our own definitions (such as summatory) to minimize the chance this axiom
+introduces an inconsistency. -/
 @[blueprint (latexEnv := "assumption") (statement :=
 /--
 Let $Q \ge 1$, $H \in \Z$, $N \in \Z_{\ge 1}$ and $c = (c_{H+1}, \dots, c_{H+N}) \in \C^N$ We then have
 $$\sum_{q \le Q} \sumstar_{\chi \pmod q} \frac{q}{\varphi(q)} \left| \sum_{H < n \le H+N} c_n \chi(n) \right|^2 \ll (N+Q^2) \| \vec{c} \|_2^2,$$
 -/
 )]
-axiom large_sieve : (sorry : Prop)
+axiom large_sieve (Q : ℝ) (hQ : 1 ≤ Q) (H : ℤ) (N : ℕ) (hN : 0 < N) (c : ℤ → ℂ) :
+  ∑ q ∈ Finset.Icc 1 ⌊Q⌋₊, ∑ χ : DirichletCharacter ℚ q, ‖∑ n ∈ Finset.Ioc H (H+N), c n * χ n‖^2 ≤
+    C_LS * (N+Q^2) * ∑ n ∈ Finset.Ioc H (H+N), ‖c n‖^2

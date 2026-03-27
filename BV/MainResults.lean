@@ -21,6 +21,8 @@ a fundamental result in analytic number theory.
 
 /-! Wrapping up -/
 
+def C_BV_L (A : ℝ) : ℝ := sorry
+
 @[blueprint (statement :=
 /--
 For each fixed $A \ge 0$ we have
@@ -31,7 +33,9 @@ uniformly for $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log (x))^{A+3}$
 Follows from \ref{Lambda_decomp} and the triangle inequality, combining the bounds
 \ref{BV_LambdaLE}, \ref{BV_LambdaSharp}, and \ref{BV_LambdaFlat}.
 -/) (uses := [BV_LambdaLE, BV_LambdaSharp, BV_LambdaFlat, Lambda_decomp])]
-theorem BV_Delta_Lambda : (sorry : Prop) := by
+theorem BV_Delta_Lambda [ProofData] (A : ℕ) (Q : ℝ) (h1Q : 1 ≤ Q) (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
+    ∑ q ∈ Nat.Icc 0 Q, maxya q (fun y a ↦ Δ_[Λ](y; q, a)) ≤
+      C_BV_L A * x / (Real.log x)^A := by
   sorry
 
 
