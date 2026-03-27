@@ -64,6 +64,22 @@ theorem summatory_nonneg {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrder
   simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and]
   grind
 
+/- This positivity extension was written by an LLM. -/
+open Qq Lean Meta Mathlib.Meta.Positivity in
+@[positivity summatory _ _]
+def summatory_positivity : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(summatory $f $x) =>
+    let i : Q(ℕ) ← mkFreshExprMVarQ q(ℕ) .syntheticOpaque
+    have body : Q(ℝ) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    match rbody.toNonneg with
+    | some pbody =>
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      assumeInstancesCommute
+      return .nonnegative q(summatory_nonneg $f $x (fun n _ => $pr n))
+    | none => throwError "body not nonneg"
+  | _, _, _ => throwError "not summatory"
 
 theorem summatory_le_UB {R : Type*} {f : ℕ → R}
     [NormedAddCommGroup R] [Lattice R] [IsOrderedAddMonoid R] (x : ℝ) (hx : 0 ≤ x) (M : ℝ) (hf : ∀ n : ℕ, n ≤ x → ‖f n‖ ≤ M) :
@@ -110,6 +126,29 @@ noncomputable def ψ (x : ℝ) {q : ℕ} (a : ZMod q) : ℝ :=
 def onCoprime {R : Type*} [Zero R] (r : ℕ) (f : ℕ → R) (n : ℕ) : R :=
   if r.Coprime n then f n else 0
 
+theorem onCoprime_nonneg {R : Type*} [Zero R] [Preorder R] {r : ℕ} {f : ℕ → R} {n : ℕ}
+    (hf : 0 ≤ f n) : 0 ≤ onCoprime r f n := by
+  unfold onCoprime
+  split
+  · exact hf
+  · exact le_refl 0
+
+/- This positivity extension was written by an LLM -/
+open Qq Lean Meta Mathlib.Meta.Positivity in
+@[positivity onCoprime _ _ _]
+def onCoprime_positivity : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@onCoprime ℝ _ $r $f $n) =>
+    let i : Q(ℕ) ← mkFreshExprMVarQ q(ℕ) .syntheticOpaque
+    have body : Q(ℝ) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    match rbody.toNonneg with
+    | some pbody =>
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      assumeInstancesCommute
+      return .nonnegative q(onCoprime_nonneg ($pr $n))
+    | none => throwError "body not nonneg"
+  | _, _, _ => throwError "not onCoprime"
 
 class ProofData where
   U : ℝ
@@ -206,6 +245,24 @@ theorem ArithmeticFunction.on_apply_of_not_mem {R : Type*} [Zero R] (s : Set ℕ
     f.on s n = 0 := by
   simp [on, hn]
 
+omit [ProofData] in
+theorem ArithmeticFunction.on_nonneg {R : Type*} [Zero R] [Preorder R] {s : Set ℕ}
+    {f : ArithmeticFunction R} (hf : ∀ n ∈ s, 0 ≤ f n) (n : ℕ) :
+    0 ≤ f.on s n := by
+  by_cases hn : n ∈ s
+  · simp [hn, hf]
+  · simp [hn]
+
+omit [ProofData] in
+@[simp]
+theorem ArithmeticFunction.on_nonneg_iff {R : Type*} [Zero R] [Preorder R] (s : Set ℕ)
+    (f : ArithmeticFunction R) :
+    (∀ n, 0 ≤ f.on s n) ↔ ∀ n ∈ s, 0 ≤ f n := by
+  constructor
+  · intro h n hn
+    simpa [hn] using h n
+  · intro h
+    apply on_nonneg h
 
 section Lambda
 
@@ -239,6 +296,22 @@ theorem LambdaLEU_apply_of_gt {n : ℕ} (hn : U < n) :
   intro _
   rw [Nat.floor_lt U_nonneg]
   exact hn
+
+@[simp]
+theorem LabmdaLEU_nonneg {n : ℕ} : 0 ≤ Λ≤U n := by
+  rw [LambdaLEU]
+  revert n
+  simp
+
+/- This positivity extension was written by an LLM. -/
+open Qq Lean Meta Mathlib.Meta.Positivity in
+@[positivity DFunLike.coe LambdaLEU _]
+def LambdaLEU_positivity : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@DFunLike.coe _ _ _ _ (@LambdaLEU $inst) $n) =>
+    assumeInstancesCommute
+    return .nonnegative q(@LabmdaLEU_nonneg $inst $n)
+  | _, _, _ => throwError "not LambdaLEU"
 
 /-- $\mu{\le U} = 1_{≤ U} \cdot \mu$ -/
 @[blueprint (statement :=

@@ -17,7 +17,7 @@ for $x \ge 1$, $q \in \N$
 -/)]
 noncomputable def Delta {R : Type*} [Field R] (f : ℕ → R) (x : ℝ) (q : ℕ) (a : ZMod q) : R :=
   summatory ((Nat.modEqs (a : ZMod q)).indicator f) x -
-  (1 / (Nat.totient q : R)) * summatory (onCoprime q f) x
+  ((Nat.totient q : R)⁻¹) * summatory (onCoprime q f) x
 
 theorem DirichletCharacter.inv_zmod_apply {q : ℕ} {a : ZMod q} (ha : IsUnit a)
     (χ : DirichletCharacter ℂ q) : χ⁻¹ a = χ a⁻¹ := by
