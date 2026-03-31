@@ -118,11 +118,34 @@ private noncomputable def f [ProofData] (j : ℕ) : ArithmeticFunction ℝ :=  (
 private noncomputable def g [ProofData] (j : ℕ) : ArithmeticFunction ℝ :=  (μ).on (Nat.cast ⁻¹' (Set.Ioc V (x / 2^(j-1))))
 
 /-- The finset of natural numbers j such that $x < 2^j ≤ y$-/
-def pows2Ioc (x y : ℝ) : Finset ℕ := sorry
+noncomputable def pows2Ioc (x y : ℝ) : Finset ℕ :=
+  if 1 ≤ y ∧ x < y then
+    Finset.Ioc ⌊(Real.logb 2 x)⌋₊  ⌊Real.logb 2 y⌋₊
+  else ∅
 
 @[simp]
-theorem mem_pows2Ioc (x y : ℝ) (n : ℕ) :
-  n ∈ pows2Ioc x y ↔ x < 2^n ∧ 2^n ≤ y := sorry
+theorem mem_pows2Ioc (x y : ℝ) (hx : 1 ≤ x) (n : ℕ) :
+    n ∈ pows2Ioc x y ↔ x < 2^n ∧ 2^n ≤ y := by
+  simp [pows2Ioc]
+  split_ifs with hxy
+  · simp only [Finset.mem_Ioc]
+    rw [Nat.floor_lt, Nat.le_floor_iff]
+    · rw [Real.le_logb_iff_rpow_le (by norm_num) (by linarith),
+        Real.logb_lt_iff_lt_rpow (by norm_num) (by linarith)]
+      norm_cast
+    · apply Real.logb_nonneg (by norm_num) hxy.1
+    · apply Real.logb_nonneg (by norm_num) hx
+  · simp only [Finset.notMem_empty, false_iff, not_and, not_le]
+    simp only [not_and, not_lt] at hxy
+    by_cases hy : 1 ≤ y
+    · grind [hxy hy]
+    · intro hxn
+      have : (1:ℝ) ≤ 2^n := by
+        norm_cast
+        apply Nat.one_le_pow
+        norm_num
+      grind
+
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 $$\Lambda^\flat(n) = \sum_{U < 2^j \le 2x/V} (f_j * g_j)(n) \quad \text{for } n \le x,$$

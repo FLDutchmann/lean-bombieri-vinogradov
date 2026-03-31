@@ -41,32 +41,30 @@ theorem summatory_mono {f : ℕ → ℝ} {x y : ℝ} (hxy : x ≤ y) (hf : ∀ n
 @[blueprint (latexEnv := "lemma") (statement := /--
 $$\sum_{n \le y} \Lambda(n) \ll U \log{x}$$
 -/)]
-theorem sum_vonMangoldt_le {y : ℝ} (hy : y ≤ x) : summatory Λ≤U y ≤ U * Real.log x := by
-  trans summatory Λ≤U U
-  ·
-    sorry
-  trans ‖summatory Λ≤U U‖
+theorem sum_LambdaLEU_le {y : ℝ} : summatory Λ≤U y ≤ U * Real.log x := by
+  trans ‖summatory Λ≤U y‖
   · rw [Real.norm_eq_abs, abs_of_nonneg]
-    positivity
-  apply summatory_le_UB_of_zero U ProofData.U_nonneg (Real.log x) _ (by simp)
-  intro n hnU
-  by_cases hn : n = 0
-  · simp only [hn, ArithmeticFunction.map_zero, norm_zero]
-    have := le_x
-    bound
-  simp only [Real.norm_eq_abs]
-  rw [abs_of_nonneg]
-  · apply le_trans LambdaLEU_le_log
+    · positivity
+  apply summatory_le_support_mul_UB (S := U)
+  · apply U_nonneg
+  · simp +contextual [abs_of_nonneg, vonMangoldt_nonneg]
+    intro n hn
+    by_cases hn0 : n = 0
+    · simp [hn0]
+      apply Real.log_nonneg
+      linarith only [le_x]
+    grw [vonMangoldt_le_log]
     gcongr
-    grw [hnU]
-    exact U_le_x
-  · positivity
+    grw [hn]
+    apply U_le_x
+  · simp +contextual
+  · simp
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 For $y, U > 0$, $q \in \N$ and $a \in \Z/q\Z$,
 $$|\Delta_{\Lambda_{\le U}}(y;\, q,\, a)| \ll U \log{x} $$
--/) (uses := [sum_vonMangoldt_le])]
-theorem Delta_LambdaLEU_bound [ProofData] {y : ℝ} (hy : y ≤ x) {q : ℕ} (hq : 0 < q) {a : ZMod q} :
+-/) (uses := [sum_LambdaLEU_le])]
+theorem Delta_LambdaLEU_bound {y : ℝ} {q : ℕ} (hq : 0 < q) {a : ZMod q} :
     |Δ_[Λ≤U](y; q, a)| ≤ 2 * U * Real.log x := by
   rw [Delta]
   grw [abs_sub, abs_mul]
@@ -77,13 +75,13 @@ theorem Delta_LambdaLEU_bound [ProofData] {y : ℝ} (hy : y ≤ x) {q : ℕ} (hq
   grw [this, abs_one]
   rw [abs_of_nonneg, abs_of_nonneg]
   · have : summatory ((Nat.modEqs a).indicator ⇑Λ≤U) y ≤ U * Real.log x := by
-      apply le_trans (summatory_mono_fun ..) (sum_vonMangoldt_le hy)
+      apply le_trans (summatory_mono_fun ..) sum_LambdaLEU_le
       intro n hn
       apply Set.indicator_le' (fun _ _ ↦ le_rfl)
       simp
     have : summatory (onCoprime q ⇑Λ≤U) y ≤ U * Real.log x := by
-      apply le_trans (summatory_mono_fun ..) (sum_vonMangoldt_le hy)
-      sorry
+      apply le_trans (summatory_mono_fun ..) sum_LambdaLEU_le
+      simp [onCoprime_le_of_nonneg]
     linarith
   · positivity
   · positivity
@@ -92,7 +90,38 @@ theorem Delta_LambdaLEU_bound [ProofData] {y : ℝ} (hy : y ≤ x) {q : ℕ} (hq
 For each fixed $A \ge 0$, $x \ge 2$ and $1 \le Q \le \sqrt{x}/(\log x)^{A+3}$,
 $$\sum_{q \le Q} \max_{\sqrt{x} \le y \le x} \max_{a \in (\Z/q\Z)^*} |\Delta_{\Lambda_{\le U}}(y;\,q,\,a)| \le Q\sqrt{x} \ll_A \frac{x}{(\log x)^{A+2}}$$
 -/) (uses := [Delta_LambdaLEU_bound])]
-theorem BV_LambdaLE [ProofData] {A : ℕ} (Q : ℝ) (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
-    ∑ q ∈ Nat.Icc 0 Q, maxya q (fun y a ↦ Δ_[Λ≤U](y; q, a)) ≤
+theorem BV_LambdaLE {A : ℕ} (Q : ℝ) (hQ_nonneg : 0 ≤ Q) (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
+    ∑ q ∈ Nat.Icc 1 Q, maxya q (fun y a ↦ |Δ_[Λ≤U](y; q, a)|) ≤
       2 * x / (Real.log x)^(A+2) := by
-  sorry
+  have hUlogx_nonneg : 0 ≤ U * Real.log x := by
+    -- TODO: Is there a good way to prove 0 ≤ U * Real.log x automatically:
+    -- We know facts about U and x that should make this trivial, but
+    -- they're not in the local context.
+    apply mul_nonneg
+    · grind
+    apply Real.log_nonneg
+    linarith only [le_x]
+  grw [Finset.sum_le_card_nsmul (n := 2 * U * Real.log x)]
+  · simp [card_natIcc, hQ_nonneg]
+    grw [Nat.floor_le]
+    · grw [hQ, U_le_sqrt_x]
+      · apply le_of_eq
+        have : 0 < Real.log x := by
+          apply Real.log_pos
+          linarith only [le_x]
+        field_simp
+        rw [Real.sq_sqrt (x_nonneg)]
+        ring
+      · linarith
+      · apply Real.log_nonneg
+        linarith only [le_x]
+      · linarith
+    · linarith
+    · apply hQ_nonneg
+  · simp
+    intro q h1q hq
+    apply maxya_le
+    · intro y hxy hyx a
+      apply Delta_LambdaLEU_bound
+      grind
+    · linarith

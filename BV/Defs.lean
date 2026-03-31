@@ -32,7 +32,6 @@ theorem Nat.mem_Icc (x : ℝ) {y : ℝ} (n : ℕ) :
 theorem Nat.mem_Icc_zero {x : ℝ} (n : ℕ) :
     n ∈ Nat.Icc 0 x ↔ n ≤ x := by simp
 
-
 theorem Nat.Icc_zero_nonempty {x : ℝ} (hx : 0 ≤ x) : (Nat.Icc 0 x).Nonempty := by
   use 0
   simp [hx]
@@ -55,6 +54,22 @@ theorem card_natIcc_zero (x : ℝ) (hx : 0 ≤ x) :
     (Nat.Icc 0 x).card = ⌊x⌋₊ + 1 := by
   simp [card_natIcc _ hx]
 
+@[simp]
+theorem Nat.Icc_eq_empty_of_neg (x : ℝ) {y : ℝ} (hy : y < 0) : Nat.Icc x y = ∅ := by
+  simp [Nat.Icc, hy]
+
+@[grind =>]
+theorem Nat.Icc_mono_left {x₁ x₂ y : ℝ} (hx : x₁ ≤ x₂) : Nat.Icc x₂ y ⊆ Nat.Icc x₁ y := by
+  intro n
+  simp only [mem_Icc, and_imp]
+  grind
+
+@[grind =>]
+theorem Nat.Icc_mono_right {x y₁ y₂ : ℝ} (hy : y₁ ≤ y₂) : Nat.Icc x y₁ ⊆ Nat.Icc x y₂ := by
+  intro n
+  simp only [mem_Icc, and_imp]
+  grind
+
 noncomputable def summatory {R : Type*} [AddCommMonoid R] (f : ℕ → R) (x : ℝ) : R :=
   ∑ i ∈ Nat.Icc 0 x, f i
 
@@ -63,6 +78,19 @@ theorem summatory_nonneg {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrder
   apply Finset.sum_nonneg
   simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and]
   grind
+
+theorem summatory_of_neg {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] (f : ℕ → R) (x : ℝ) (hx : x < 0) :
+    summatory f x = 0 := by
+  simp [summatory, Nat.Icc_eq_empty_of_neg _ hx]
+
+theorem summatory_eq_summatory_of_lt_of_eq_zero {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] (f : ℕ → R) (x y : ℝ) (hxy : x ≤ y) (hf : ∀ n : ℕ, x < n ∧ n ≤ y → f n = 0)  : summatory f x = summatory f y := by
+  simp [summatory]
+  apply Finset.sum_subset
+  · grind
+  simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and, not_le]
+  intro n hy hx
+  exact hf n ⟨hx, hy⟩
+
 
 /- This positivity extension was written by an LLM. -/
 open Qq Lean Meta Mathlib.Meta.Positivity in
@@ -115,6 +143,31 @@ theorem summatory_le_UB_of_zero {R : Type*} {f : ℕ → R}
     gcongr
     exact Nat.floor_le hx
 
+theorem summatory_le_support_mul_UB {R : Type*} {f : ℕ → R}
+    [NormedAddCommGroup R] [Lattice R] [IsOrderedAddMonoid R] (x S : ℝ)
+    (hS : 0 ≤ S) (M : ℝ) (hf : ∀ n : ℕ, n ≤ S → ‖f n‖ ≤ M)
+    (hf_support : ∀ n : ℕ, n > S → f n = 0) (hf0 : f 0 = 0) :
+  ‖summatory f x‖ ≤ S * M := by
+  have hM : 0 ≤ M := by
+    grw [← hf 0 (mod_cast hS)]
+    simp
+  by_cases hx : x < 0
+  · rw [summatory_of_neg _ _ hx]
+    simp only [norm_zero, ge_iff_le]
+    positivity
+  push_neg at hx
+  by_cases hyS : x ≤ S
+  · apply le_trans <| summatory_le_UB_of_zero x (by gcongr) M _ hf0
+    · gcongr
+    · grind
+  · push_neg at hyS
+    calc _ = ‖summatory f S‖ := ?A
+     _ ≤ _ := summatory_le_UB_of_zero S hS M hf hf0
+    congr 1
+    apply (summatory_eq_summatory_of_lt_of_eq_zero ..).symm
+    · linarith only [hyS]
+    · grind
+
 def Nat.modEqs {q : ℕ} (a : ZMod q) : Set ℕ := {n : ℕ | n = a}
 
 noncomputable def ψ (x : ℝ) {q : ℕ} (a : ZMod q) : ℝ :=
@@ -150,6 +203,11 @@ def onCoprime_positivity : PositivityExt where eval {u α} zα pα e := do
     | none => throwError "body not nonneg"
   | _, _, _ => throwError "not onCoprime"
 
+theorem onCoprime_le_of_nonneg {R : Type*} [Zero R] [Preorder R] {r : ℕ} {f : ℕ → R} {n : ℕ} (hf : 0 ≤ f n):
+    onCoprime r f n ≤ f n := by
+  rw [onCoprime]
+  split_ifs <;> simp [hf]
+
 class ProofData where
   U : ℝ
   V : ℝ
@@ -163,28 +221,40 @@ open ProofData
 
 variable [data : ProofData]
 
+attribute [grind .] le_x
+
+@[grind .]
 theorem ProofData.U_nonneg : 0 ≤ U := by
   apply le_trans _ le_U
   positivity
 
+@[grind .]
 theorem ProofData.one_le_U : 1 ≤ U := by
   apply le_trans _ le_U
   simp
 
+@[grind .]
 theorem ProofData.V_nonneg : 0 ≤ V := by
   apply le_trans _ le_V
   positivity
 
+@[grind .]
 theorem ProofData.one_le_V : 1 ≤ V := by
   apply le_trans _ le_V
   simp
 
+@[grind .]
 theorem ProofData.x_nonneg : 0 ≤ x := by
   linarith only [le_x]
 
-theorem ProofData.U_le_x : U ≤ x := by
+@[grind ., bound]
+theorem ProofData.U_le_sqrt_x : U ≤ √x := by
   calc _ ≤ U * V := le_mul_of_one_le_right U_nonneg one_le_V
     _ ≤ Real.sqrt x := UV_le
+
+@[grind ., bound]
+theorem ProofData.U_le_x : U ≤ x := by
+  calc _ ≤ Real.sqrt x := U_le_sqrt_x
     _ ≤ x := by
       refine Real.sqrt_le_iff.mpr ?_
       constructor
@@ -218,13 +288,28 @@ theorem Nat.Icc_sqrt_nonempty : (Nat.Icc (√x) x).Nonempty := by
 
 noncomputable def maxy [ProofData] (f : ℝ → ℝ) : ℝ :=  ⨆ y ∈ Set.Icc (√ x) x, f y
 
--- private theorem maxya.extracted_3 (q : ℕ) (h : NeZero q) : (Nat.Icc (√x) x ×ˢ (Finset.univ : Finset (ZMod q)ˣ)).Nonempty := by
---   simp [Nat.Icc_sqrt_nonempty]
+theorem maxy_le {f : ℝ → ℝ} {M : ℝ}
+    (hf : ∀ y, √x ≤ y → y ≤ x → f y ≤ M) (hM : 0 ≤ M) :
+    maxy f ≤ M := by
+  simp [maxy]
+  apply Real.iSup_le _ hM
+  intro y
+  apply Real.iSup_le _ hM
+  intro hy
+  apply hf _ hy.1 hy.2
 
 -- TODO : We're taking the maximum over the naturals in [√x, x], but really we should use reals.
 /-- The maximum of $f$ over all $y \in \left[\sqrt{x}, x\right]$ and $a \in (\mathbb{Z} / q\mathbb{Z})^* -/
 noncomputable def maxya [ProofData] (q : ℕ) (f : ℝ → ZMod q → ℝ) : ℝ :=
   ⨆ a : (ZMod q)ˣ, maxy (fun y ↦ f y a )
+
+theorem maxya_le {q : ℕ} {f : ℝ → ZMod q → ℝ} {M : ℝ} (hf : ∀ y, √x ≤ y → y ≤ x → ∀ a, f y a ≤ M) (hM : 0 ≤ M) :
+    maxya q f ≤ M := by
+  rw [maxya]
+  apply Real.iSup_le _ hM
+  intro a
+  apply maxy_le _ hM
+  grind
 
 /-- Restrict an arithmetic function to a set, setting all values outside the set to zero.
 Like `Set.indicator` but for `ArithmeticFunction`. -/
@@ -298,7 +383,7 @@ theorem LambdaLEU_apply_of_gt {n : ℕ} (hn : U < n) :
   exact hn
 
 @[simp]
-theorem LabmdaLEU_nonneg {n : ℕ} : 0 ≤ Λ≤U n := by
+theorem LambdaLEU_nonneg {n : ℕ} : 0 ≤ Λ≤U n := by
   rw [LambdaLEU]
   revert n
   simp
@@ -310,7 +395,7 @@ def LambdaLEU_positivity : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@DFunLike.coe _ _ _ _ (@LambdaLEU $inst) $n) =>
     assumeInstancesCommute
-    return .nonnegative q(@LabmdaLEU_nonneg $inst $n)
+    return .nonnegative q(@LambdaLEU_nonneg $inst $n)
   | _, _, _ => throwError "not LambdaLEU"
 
 /-- $\mu{\le U} = 1_{≤ U} \cdot \mu$ -/
