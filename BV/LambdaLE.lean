@@ -46,13 +46,12 @@ theorem sum_LambdaLEU_le {y : ℝ} : summatory Λ≤U y ≤ U * Real.log x := by
   · rw [Real.norm_eq_abs, abs_of_nonneg]
     · positivity
   apply summatory_le_support_mul_UB (S := U)
-  · apply U_nonneg
+  · positivity
   · simp +contextual [abs_of_nonneg, vonMangoldt_nonneg]
     intro n hn
     by_cases hn0 : n = 0
     · simp [hn0]
-      apply Real.log_nonneg
-      linarith only [le_x]
+      positivity
     grw [vonMangoldt_le_log]
     gcongr
     grw [hn]
@@ -93,14 +92,6 @@ $$\sum_{q \le Q} \max_{\sqrt{x} \le y \le x} \max_{a \in (\Z/q\Z)^*} |\Delta_{\L
 theorem BV_LambdaLE {A : ℕ} (Q : ℝ) (hQ_nonneg : 0 ≤ Q) (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
     ∑ q ∈ Nat.Icc 1 Q, maxya q (fun y a ↦ |Δ_[Λ≤U](y; q, a)|) ≤
       2 * x / (Real.log x)^(A+2) := by
-  have hUlogx_nonneg : 0 ≤ U * Real.log x := by
-    -- TODO: Is there a good way to prove 0 ≤ U * Real.log x automatically:
-    -- We know facts about U and x that should make this trivial, but
-    -- they're not in the local context.
-    apply mul_nonneg
-    · grind
-    apply Real.log_nonneg
-    linarith only [le_x]
   grw [Finset.sum_le_card_nsmul (n := 2 * U * Real.log x)]
   · simp [card_natIcc, hQ_nonneg]
     grw [Nat.floor_le]
@@ -112,16 +103,11 @@ theorem BV_LambdaLE {A : ℕ} (Q : ℝ) (hQ_nonneg : 0 ≤ Q) (hQ : Q ≤ √x /
         field_simp
         rw [Real.sq_sqrt (x_nonneg)]
         ring
-      · linarith
-      · apply Real.log_nonneg
-        linarith only [le_x]
-      · linarith
-    · linarith
-    · apply hQ_nonneg
+    · exact hQ_nonneg
   · simp
     intro q h1q hq
     apply maxya_le
     · intro y hxy hyx a
       apply Delta_LambdaLEU_bound
       grind
-    · linarith
+    · positivity

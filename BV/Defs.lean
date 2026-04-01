@@ -224,9 +224,13 @@ variable [data : ProofData]
 attribute [grind .] le_x
 
 @[grind .]
-theorem ProofData.U_nonneg : 0 ≤ U := by
-  apply le_trans _ le_U
+theorem ProofData.U_pos : 0 < U := by
+  calc 0 < Real.exp (√x) := ?A
+    _ ≤ U := le_U
   positivity
+
+@[grind .]
+theorem ProofData.U_nonneg : 0 ≤ U := le_of_lt U_pos
 
 @[grind .]
 theorem ProofData.one_le_U : 1 ≤ U := by
@@ -234,9 +238,13 @@ theorem ProofData.one_le_U : 1 ≤ U := by
   simp
 
 @[grind .]
-theorem ProofData.V_nonneg : 0 ≤ V := by
-  apply le_trans _ le_V
+theorem ProofData.V_pos : 0 < V := by
+  calc 0 < Real.exp (√x) := ?A
+    _ ≤ V := le_V
   positivity
+
+@[grind .]
+theorem ProofData.V_nonneg : 0 ≤ V := le_of_lt V_pos
 
 @[grind .]
 theorem ProofData.one_le_V : 1 ≤ V := by
@@ -260,6 +268,37 @@ theorem ProofData.U_le_x : U ≤ x := by
       constructor
       · exact x_nonneg
       · exact le_self_pow₀ (by linarith only [le_x]) (by norm_num)
+
+open Qq Lean Meta Mathlib.Meta.Positivity in
+@[positivity @U _]
+def U_positivity : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@U $inst) =>
+    assumeInstancesCommute
+    return .positive q(U_pos)
+  | _, _, _ => throwError "not U"
+
+open Qq Lean Meta Mathlib.Meta.Positivity in
+@[positivity @V _]
+def V_positivity : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@V $inst) =>
+    assumeInstancesCommute
+    return .positive q(V_pos)
+  | _, _, _ => throwError "not V"
+
+lemma log_x_pos : 0 < Real.log x := by
+  apply Real.log_pos
+  linarith only [le_x]
+
+open Qq Lean Meta Mathlib.Meta.Positivity in
+@[positivity Real.log x]
+def log_x_positivity : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.log (@x $inst)) =>
+    assumeInstancesCommute
+    return .positive q(log_x_pos)
+  | _, _, _ => throwError "not Real.log x"
 
 theorem Nat.Icc_sqrt_nonempty : (Nat.Icc (√x) x).Nonempty := by
   by_cases hx : 4 ≤ x
