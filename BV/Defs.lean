@@ -71,12 +71,19 @@ theorem Nat.Icc_mono_right {x y₁ y₂ : ℝ} (hy : y₁ ≤ y₂) : Nat.Icc x 
   grind
 
 noncomputable def summatory {R : Type*} [AddCommMonoid R] (f : ℕ → R) (x : ℝ) : R :=
-  ∑ i ∈ Nat.Icc 0 x, f i
+  ∑ i ∈ Nat.Icc 1 x, f i
+
+theorem summatory_apply {R : Type*} [AddCommMonoid R] {f : ℕ → R} {x : ℝ} :
+    summatory f x = ∑ n ∈ Finset.Ioc 0 ⌊x⌋₊, f n := by
+  by_cases hx : 0 ≤ x
+  · simp [summatory, Nat.Icc, if_pos hx]
+    sorry
+  · sorry
 
 theorem summatory_nonneg {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] (f : ℕ → R) (x : ℝ) (hf : ∀ n : ℕ, n ≤ x → 0 ≤ f n ) : 0 ≤ summatory f x := by
   simp [summatory]
   apply Finset.sum_nonneg
-  simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and]
+  simp only [Nat.mem_Icc]
   grind
 
 theorem summatory_of_neg {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] (f : ℕ → R) (x : ℝ) (hx : x < 0) :
@@ -87,10 +94,24 @@ theorem summatory_eq_summatory_of_lt_of_eq_zero {R : Type*} [AddCommMonoid R] [P
   simp [summatory]
   apply Finset.sum_subset
   · grind
-  simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and, not_le]
+  simp only [Nat.mem_Icc]
   intro n hy hx
-  exact hf n ⟨hx, hy⟩
+  grind
 
+@[push]
+theorem summatory_add_distrib {R : Type*} [AddCommMonoid R] {f g : ℕ → R} {x : ℝ} :
+    summatory (fun n ↦ f n + g n) x = summatory f x + summatory g x := by
+  simp [summatory, Finset.sum_add_distrib]
+
+@[push]
+theorem summatory_sub_distrib {R : Type*} [AddCommGroup R] {f g : ℕ → R} {x : ℝ} :
+    summatory (fun n ↦ f n - g n) x = summatory f x - summatory g x := by
+  simp [summatory]
+
+@[push]
+theorem summatory_neg {R : Type*} [AddCommGroup R] {f : ℕ → R} {x : ℝ} :
+    summatory (fun n ↦ - f n) x = - summatory f x := by
+  simp [summatory]
 
 /- This positivity extension was written by an LLM. -/
 open Qq Lean Meta Mathlib.Meta.Positivity in
@@ -111,42 +132,43 @@ def summatory_positivity : PositivityExt where eval {u α} zα pα e := do
 
 theorem summatory_le_UB {R : Type*} {f : ℕ → R}
     [NormedAddCommGroup R] [Lattice R] [IsOrderedAddMonoid R] (x : ℝ) (hx : 0 ≤ x) (M : ℝ) (hf : ∀ n : ℕ, n ≤ x → ‖f n‖ ≤ M) :
-  ‖summatory f x‖ ≤ (x+1) * M := by
-  have hM : 0 ≤ M := by
-    grw [← hf 0 (mod_cast hx)]
-    simp
-  grw [summatory, norm_sum_le]
-  trans ∑ i ∈ Nat.Icc 0 x, M
-  · gcongr with n hn
-    apply hf
-    simpa using hn
-  · simp [hx]
-    gcongr
-    exact Nat.floor_le hx
-
-theorem summatory_le_UB_of_zero {R : Type*} {f : ℕ → R}
-    [NormedAddCommGroup R] [Lattice R] [IsOrderedAddMonoid R] (x : ℝ) (hx : 0 ≤ x) (M : ℝ) (hf : ∀ n : ℕ, n ≤ x → ‖f n‖ ≤ M) (hf0 : f 0 = 0) :
   ‖summatory f x‖ ≤ x * M := by
   have hM : 0 ≤ M := by
     grw [← hf 0 (mod_cast hx)]
     simp
   grw [summatory, norm_sum_le]
-  calc _ = ∑ n ∈ (Nat.Icc 0 x).erase 0, ‖f n‖ := ?_
-    _ ≤ ∑ n ∈ (Nat.Icc 0 x).erase 0, M := ?_
-    _ ≤ x * M := ?_
-  · simp [hf0, Finset.sum_erase]
+  trans ∑ i ∈ Nat.Icc 1 x, M
   · gcongr with n hn
     apply hf
-    simp only [Finset.mem_erase, ne_eq, Nat.mem_Icc, Nat.cast_nonneg, true_and] at hn
+    simp only [Nat.mem_Icc, Nat.one_le_cast] at hn
     exact hn.2
   · simp [hx]
     gcongr
     exact Nat.floor_le hx
 
+-- theorem summatory_le_UB_of_zero {R : Type*} {f : ℕ → R}
+--     [NormedAddCommGroup R] [Lattice R] [IsOrderedAddMonoid R] (x : ℝ) (hx : 0 ≤ x) (M : ℝ) (hf : ∀ n : ℕ, n ≤ x → ‖f n‖ ≤ M) (hf0 : f 0 = 0) :
+--   ‖summatory f x‖ ≤ x * M := by
+--   have hM : 0 ≤ M := by
+--     grw [← hf 0 (mod_cast hx)]
+--     simp
+--   grw [summatory, norm_sum_le]
+--   calc _ = ∑ n ∈ (Nat.Icc 0 x).erase 0, ‖f n‖ := ?_
+--     _ ≤ ∑ n ∈ (Nat.Icc 0 x).erase 0, M := ?_
+--     _ ≤ x * M := ?_
+--   · simp [hf0, Finset.sum_erase]
+--   · gcongr with n hn
+--     apply hf
+--     simp only [Finset.mem_erase, ne_eq, Nat.mem_Icc, Nat.cast_nonneg, true_and] at hn
+--     exact hn.2
+--   · simp [hx]
+--     gcongr
+--     exact Nat.floor_le hx
+
 theorem summatory_le_support_mul_UB {R : Type*} {f : ℕ → R}
     [NormedAddCommGroup R] [Lattice R] [IsOrderedAddMonoid R] (x S : ℝ)
     (hS : 0 ≤ S) (M : ℝ) (hf : ∀ n : ℕ, n ≤ S → ‖f n‖ ≤ M)
-    (hf_support : ∀ n : ℕ, n > S → f n = 0) (hf0 : f 0 = 0) :
+    (hf_support : ∀ n : ℕ, n > S → f n = 0) :
   ‖summatory f x‖ ≤ S * M := by
   have hM : 0 ≤ M := by
     grw [← hf 0 (mod_cast hS)]
@@ -157,12 +179,12 @@ theorem summatory_le_support_mul_UB {R : Type*} {f : ℕ → R}
     positivity
   push_neg at hx
   by_cases hyS : x ≤ S
-  · apply le_trans <| summatory_le_UB_of_zero x (by gcongr) M _ hf0
+  · apply le_trans <| summatory_le_UB x (by gcongr) M _
     · gcongr
     · grind
   · push_neg at hyS
     calc _ = ‖summatory f S‖ := ?A
-     _ ≤ _ := summatory_le_UB_of_zero S hS M hf hf0
+     _ ≤ _ := summatory_le_UB S hS M hf
     congr 1
     apply (summatory_eq_summatory_of_lt_of_eq_zero ..).symm
     · linarith only [hyS]
@@ -222,6 +244,9 @@ open ProofData
 variable [data : ProofData]
 
 attribute [grind .] le_x
+
+theorem ProofData.x_pos : 0 < x := by
+  linarith only [le_x]
 
 @[grind .]
 theorem ProofData.U_pos : 0 < U := by
@@ -293,6 +318,15 @@ lemma log_x_pos : 0 < Real.log x := by
 
 open Qq Lean Meta Mathlib.Meta.Positivity in
 @[positivity Real.log x]
+def x_positivity : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@x $inst) =>
+    assumeInstancesCommute
+    return .positive q(x_pos)
+  | _, _, _ => throwError "not ProofData.x"
+
+open Qq Lean Meta Mathlib.Meta.Positivity in
+@[positivity Real.log x]
 def log_x_positivity : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (@x $inst)) =>
@@ -340,7 +374,7 @@ theorem maxy_le {f : ℝ → ℝ} {M : ℝ}
 -- TODO : We're taking the maximum over the naturals in [√x, x], but really we should use reals.
 /-- The maximum of $f$ over all $y \in \left[\sqrt{x}, x\right]$ and $a \in (\mathbb{Z} / q\mathbb{Z})^* -/
 noncomputable def maxya [ProofData] (q : ℕ) (f : ℝ → ZMod q → ℝ) : ℝ :=
-  ⨆ a : (ZMod q)ˣ, maxy (fun y ↦ f y a )
+  ⨆ a : (ZMod q)ˣ, maxy (fun y ↦ f y a)
 
 theorem maxya_le {q : ℕ} {f : ℝ → ZMod q → ℝ} {M : ℝ} (hf : ∀ y, √x ≤ y → y ≤ x → ∀ a, f y a ≤ M) (hM : 0 ≤ M) :
     maxya q f ≤ M := by

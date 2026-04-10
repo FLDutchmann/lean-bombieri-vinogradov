@@ -57,7 +57,7 @@ theorem bombieri_vinogradov (A : ℕ) {x : ℝ} (hx : 2 ≤ x) {Q : ℝ} (hle_Q 
     (hQ : Q ≤ √x / (Real.log x)^(A+3)) :
     (∑ q ∈ Nat.Icc 1 Q,
         have : NeZero q := sorry
-      (Nat.Icc 0 x).sup' (Nat.Icc_zero_nonempty sorry) fun y ↦
+      ⨆ y ∈ Set.Icc 1 x,
         Finset.univ.sup' Finset.univ_nonempty fun (a : ZMod q) ↦ (|ψ y a - x / φ q|))
       ≤ C_BV A * x / (Real.log x)^A := by
   sorry

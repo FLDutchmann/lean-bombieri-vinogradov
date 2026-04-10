@@ -19,7 +19,7 @@ $$
 -/
 )]
 axiom siegel_walfisz (A : ℕ) (C : ℕ) {x : ℝ} (hx : 2 ≤ x)
-    {q : ℕ} (hq : q ≤ (Real.log x) ^ C) {a : ZMod q} (ha : IsUnit a) :
+    {q : ℕ} (hq0 : 0 < q) (hq : q ≤ (Real.log x) ^ C) {a : ZMod q} (ha : IsUnit a) :
   |ψ x a - x / φ q| ≤ C_SW A C * x / (Real.log x) ^ A
 
 

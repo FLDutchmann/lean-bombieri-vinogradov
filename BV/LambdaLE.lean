@@ -22,8 +22,9 @@ theorem summatory_mono_fun (f g : ℕ → ℝ) (x : ℝ) (hfg : ∀ n : ℕ, n �
     summatory f x ≤ summatory g x := by
   rw [summatory, summatory]
   gcongr with n hn
-  simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and] at hn
-  exact hfg n hn
+  simp only [Nat.mem_Icc] at hn
+  apply hfg
+  exact hn.2
 
 omit [ProofData] in
 @[gcongr]
@@ -31,11 +32,11 @@ theorem summatory_mono {f : ℕ → ℝ} {x y : ℝ} (hxy : x ≤ y) (hf : ∀ n
     summatory f x ≤ summatory f y := by
   rw [summatory, summatory]
   gcongr with n
-  · simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and, not_le]
+  · simp only [Nat.mem_Icc]
     intro n hny _
-    exact hf n hny
+    exact hf n hny.2
   · intro n
-    simp only [Nat.mem_Icc, Nat.cast_nonneg, true_and]
+    simp only [Nat.mem_Icc]
     gcongr
 
 @[blueprint (latexEnv := "lemma") (statement := /--
@@ -57,7 +58,6 @@ theorem sum_LambdaLEU_le {y : ℝ} : summatory Λ≤U y ≤ U * Real.log x := by
     grw [hn]
     apply U_le_x
   · simp +contextual
-  · simp
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 For $y, U > 0$, $q \in \N$ and $a \in \Z/q\Z$,
