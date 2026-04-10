@@ -1,5 +1,7 @@
 import Mathlib
 import Architect
+
+import BV.Axioms
 import BV.Defs
 
 open ArithmeticFunction
@@ -26,6 +28,12 @@ theorem DirichletCharacter.inv_zmod_apply {q : ℕ} {a : ZMod q} (ha : IsUnit a)
     rw [← map_mul, ZMod.mul_inv_of_unit a ha, map_one]
   exact inv_eq_of_mul_eq_one_right hmul
 
+theorem DirichletCharacter.starRingEnd_apply {q : ℕ} {a : ZMod q} (ha : IsUnit a)
+    (χ : DirichletCharacter ℂ q) : starRingEnd ℂ (χ a) = χ⁻¹ a := by
+  rw [MulChar.inv_apply_eq_inv']
+  rw [Complex.inv_eq_conj]
+  apply DirichletCharacter.unit_norm_eq_one χ ha.unit
+
 lemma DirichletCharacter.one_natCast_apply {q : ℕ} [NeZero q] (n : ℕ) :
     (1 : DirichletCharacter ℂ q) (n : ZMod q) = if q.Coprime n then 1 else 0 := by
   split_ifs with h
@@ -38,8 +46,8 @@ notation3 "Δ_[" f "](" x "; " q ", " a ")" => Delta f x q a
 /--
 $$\Delta_f(y ;q, a) = \frac{1}{\varphi(q)} \sum_{\chi \pmod{q}, \chi \ne \chi_0} \bar\chi(a) \sum_{n \le y} f(n) \chi(n) $$
 -/)]
-lemma Delta_eq_sum_char (f : ℕ → ℝ) (y : ℝ) (q a : ℕ) [NeZero q]
-    (ha : IsUnit (a : ZMod q)) :
+lemma Delta_eq_sum_char {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q}
+    (ha : IsUnit a) :
     open Classical in
     (↑(Delta f y q a) : ℂ) = (1 / (Nat.totient q : ℂ)) *
       ∑ χ : DirichletCharacter ℂ q, if χ ≠ 1 then
@@ -76,14 +84,12 @@ lemma Delta_eq_sum_char (f : ℕ → ℝ) (y : ℝ) (q a : ℕ) [NeZero q]
     refine Finset.sum_congr rfl (fun y hy ↦ ?_)
     simp_rw [mul_comm (f y : ℂ), ← mul_assoc, ← Finset.sum_mul, MulChar.star_apply',
       DirichletCharacter.inv_zmod_apply ha, this]
-    by_cases h : (y : ZMod q) = a
-    · simp [h]
-    · simp [h]; grind
+    simp only [eq_comm]
+    split_ifs <;> simp
 
   have hF1 : F 1 = ∑ i ∈ Nat.Icc 1 y, ↑(if q.Coprime i then f i else 0) := by
-    simp only [F, MulChar.one_apply ha, star_one, one_mul]
-    apply Finset.sum_congr rfl; intro n _
-    rw [DirichletCharacter.one_natCast_apply]
+    simp only [F, MulChar.one_apply ha, star_one, one_mul, DirichletCharacter.one_natCast_apply]
+    congr! 1 with n
     split_ifs <;> simp
   rw [hFsum, hF1]
 
@@ -102,7 +108,7 @@ theorem Delta_Lambda_eq (x : ℝ) (q : ℕ) (a : ZMod q) :
   rw [summatory, Finset.sum_filter]
   congr! 1 with n hn
 
-def C_D1 (A : ℝ) : ℝ := sorry
+noncomputable def C_D1 (A : ℕ) : ℝ := C_SW A 0
 
 open ProofData in
 @[blueprint (statement :=
@@ -111,11 +117,12 @@ For all $A \in \N$,
 $$ \sum_{n \le x} \Lambda{n} = x + O_A(x/\log(x)^A)$$
 -/
 )]
-lemma PNT [ProofData] (A : ℕ) {q : ℕ}  :
-    |summatory (fun n ↦  Λ n) x - x| ≤ C_D1 A * (x / Real.log x ^ A) := by
-  sorry
-
-
+lemma PNT [ProofData] (A : ℕ) :
+    |summatory (fun n ↦ Λ n) x - x| ≤ C_D1 A * (x / Real.log x ^ A) := by
+  have := siegel_walfisz A 0 le_x (q := 1) (by norm_num) (by simp) (a := 1) (by simp)
+  simp [ψ_one_one] at this
+  grw [summatory_vonMangoldt, this]
+  rfl
 
 lemma vonMangoldt_eq_ite_vonMangoldt (n : ℕ) : Λ n = if IsPrimePow n then Λ n else 0 := by
   simp [vonMangoldt_apply]
@@ -208,19 +215,83 @@ $$ \sum_{n \le x, n \not \mid q} \Lambda{n} = x + O_A(x/\log(x)^A+\log q \log x)
 -/
 )]
 lemma sum_primes_not_dvd_log_eq_id [ProofData] (A : ℕ) {q : ℕ} (hq : 0 < q) :
-  |summatory (fun n ↦ if q.Coprime n then Λ n else 0) x - x| ≤ C_D1 A * (x / Real.log x ^ A) + C_SVNC * (Real.log q * Real.log x) := by
-  grw [abs_sub_le (b := (summatory (fun n ↦ Λ n) x)), PNT A (q := q), abs_sub_comm, summatory_sub_ite, sum_vonMangoldt_not_coprime_ll_logq hq]
+  |summatory (fun n ↦ if q.Coprime n then Λ n else 0) x - x|
+    ≤ C_D1 A * (x / Real.log x ^ A) + C_SVNC * (Real.log q * Real.log x) := by
+  grw [abs_sub_le (b := (summatory (fun n ↦ Λ n) x)), PNT A, abs_sub_comm, summatory_sub_ite,
+    sum_vonMangoldt_not_coprime_ll_logq hq]
   apply le_of_eq
   ring
+
+def ArithmeticFunction.twist {q : ℕ} (f : ArithmeticFunction ℂ) (c : DirichletCharacter ℂ q)  : ArithmeticFunction ℂ := ⟨
+  fun n ↦ f n * c n,
+  by simp
+⟩
+
+@[simp]
+theorem ArithmeticFunction.twist_apply {q : ℕ} {f : ArithmeticFunction ℂ} {χ : DirichletCharacter ℂ q} {n : ℕ} :
+    f.twist χ n = f n * χ ↑n := rfl
+
+open ArithmeticFunction in
+theorem ArithmeticFunction.mul_twist {q : ℕ} (f g : ArithmeticFunction ℂ) (χ : DirichletCharacter ℂ q) (n : ℕ) :
+    (f * g).twist χ n = (f.twist χ * g.twist χ) n := by
+  simp [← mul_assoc, Finset.sum_mul]
+  congr! 1 with ⟨a, b⟩ hab
+  simp only [Nat.mem_divisorsAntidiagonal, ne_eq] at hab
+  rw [← hab.1]
+  simp only [Nat.cast_mul, map_mul]
+  ring
+
+theorem ArithmeticFunction.summatory_mul_eq_summatory {R : Type u_2} [Semiring R] (f g : ArithmeticFunction R) (x : ℝ) :
+    summatory (f * g) x  = summatory (fun n ↦ f n * summatory g (x/n)) x := by
+  have := ArithmeticFunction.sum_Ioc_mul_eq_sum_sum f g (⌊x⌋₊)
+  simp_rw [summatory_apply, this, Nat.floor_div_natCast]
+
+@[push]
+lemma Finset.sum_summatory_comm {ι R : Type*} [DecidableEq ι] {s : Finset ι} [AddCommMonoid R] (f : ι → ℕ → R) {x : ℝ} :
+    ∑ i ∈ s, summatory (f i) x = summatory (fun n ↦ ∑ i ∈ s, f i n) x := by
+  simp [summatory_apply]
+  rw [Finset.sum_comm]
+
+@[push]
+lemma Finset.summatory_sum_comm {ι R : Type*} [DecidableEq ι] {s : Finset ι} [AddCommMonoid R] (f : ι → ℕ → R) {x : ℝ} :
+    summatory (fun n ↦ ∑ i ∈ s, f i n) x = ∑ i ∈ s, summatory (f i) x := by
+  exact (sum_summatory_comm ..).symm
+
+lemma ZMod.isUnit_inv' {q : ℕ} (n : ZMod q) : IsUnit n → IsUnit n⁻¹ := by
+  intro h
+  rw [isUnit_iff_exists]
+  exact ⟨n, ZMod.inv_mul_of_unit _ h, ZMod.mul_inv_of_unit _ h⟩
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 If $f$ is an arithmetic function supported on $[1, y]$ then
 $$\Delta_{f*g}(x;\,q,\,a) = \sum_{\substack{k \le y \\ (k,q)=1}} f(k)\, \Delta_g\!\left(\frac{x}{k};\, q,\, a\bar{k}\right)$$
 -/)]
-theorem Delta_convolution_eq {x : ℝ} {q : ℕ} {a : ZMod q} (f g : ArithmeticFunction ℝ) (y : ℝ) (hf_support : ∀ n : ℕ, n > y → f n = 0) :
-    Δ_[f*g](x; q, a) = summatory (fun k ↦ if k.Coprime q then f k * Δ_[g](x/k; q, a * (k : ZMod q)⁻¹) else 0) y := by
-
-  sorry
+theorem Delta_convolution_eq {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q} (ha : IsUnit a) (f g : ArithmeticFunction ℂ) :
+    Δ_[f*g](y; q, a) = summatory (fun k ↦ if k.Coprime q then f k * Δ_[g](y/k; q, a * (k : ZMod q)⁻¹) else 0) y := by
+  rw [Delta_eq_sum_char (f := ↑(f*g))]
+  simp_rw [← twist_apply, mul_twist, ← Finset.sum_filter]
+  simp_rw [summatory_mul_eq_summatory]
+  simp only [one_div, twist_apply]
+  pull summatory
+  congr! 2 with n
+  split_ifs with hn
+  · rw [Delta_eq_sum_char, ← Finset.sum_filter]
+    · pull summatory
+      congr! 2 with m
+      simp only [ne_eq, RCLike.star_def, twist_apply, one_div, map_mul, star_mul']
+      simp_rw [Finset.mul_sum]
+      congr! 1 with χ hχ
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hχ
+      rw [← DirichletCharacter.inv_zmod_apply, ← DirichletCharacter.starRingEnd_apply]
+      · simp; ring
+      · simpa [ZMod.isUnit_iff_coprime] using hn
+      · simpa [ZMod.isUnit_iff_coprime] using hn
+    · simp [ha]
+      apply ZMod.isUnit_inv'
+      simpa [ZMod.isUnit_iff_coprime] using hn
+  · have : ¬ IsUnit (n : ZMod q) := by simp [ZMod.isUnit_iff_coprime, hn]
+    simp [this, MulChar.map_nonunit, summatory_zero]
+  · exact ha
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 For $x \ge 1$, $q \in \N$ and $a \in (\Z/q\Z)^*$,

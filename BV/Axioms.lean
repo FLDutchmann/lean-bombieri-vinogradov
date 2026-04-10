@@ -20,7 +20,7 @@ $$
 )]
 axiom siegel_walfisz (A : ℕ) (C : ℕ) {x : ℝ} (hx : 2 ≤ x)
     {q : ℕ} (hq0 : 0 < q) (hq : q ≤ (Real.log x) ^ C) {a : ZMod q} (ha : IsUnit a) :
-  |ψ x a - x / φ q| ≤ C_SW A C * x / (Real.log x) ^ A
+  |ψ x a - x / φ q| ≤ C_SW A C * (x / (Real.log x) ^ A)
 
 
 axiom C_LS : ℝ
@@ -34,5 +34,5 @@ $$\sum_{q \le Q} \sumstar_{\chi \pmod q} \frac{q}{\varphi(q)} \left| \sum_{H < n
 -/
 )]
 axiom large_sieve (Q : ℝ) (hQ : 1 ≤ Q) (H : ℤ) (N : ℕ) (hN : 0 < N) (c : ℤ → ℂ) :
-  ∑ q ∈ Finset.Icc 1 ⌊Q⌋₊, ∑ χ : DirichletCharacter ℚ q, ‖∑ n ∈ Finset.Ioc H (H+N), c n * χ n‖^2 ≤
+  ∑ q ∈ Finset.Ioc 0 ⌊Q⌋₊, ∑ χ : DirichletCharacter ℚ q, ‖∑ n ∈ Finset.Ioc H (H+N), c n * χ n‖^2 ≤
     C_LS * (N+Q^2) * ∑ n ∈ Finset.Ioc H (H+N), ‖c n‖^2
