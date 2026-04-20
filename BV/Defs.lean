@@ -13,6 +13,23 @@ theorem Nat.modEqs_one_one : Nat.modEqs (1 : ZMod 1) = Set.univ := by
   have : ∀ n : ZMod 1, n = 1 := fun n ↦ Subsingleton.elim n 1
   simp [modEqs, this]
 
+@[simp]
+theorem Nat.mem_modEqs {q : ℕ} (a : ZMod q) (n : ℕ) :
+    n ∈ modEqs a ↔ n = a := by
+  rfl
+
+theorem Nat.modEqs_eq_range {q : ℕ} (a : ZMod q) :
+    Nat.modEqs a = Set.range (fun x ↦ q * x + a.val) := by
+  ext n
+  simp only [mem_modEqs, Set.mem_range]
+  constructor
+  · rintro rfl
+    use n/q
+    simp [Nat.div_add_mod]
+  · rintro ⟨y, rfl⟩
+    simp only [cast_add, cast_mul, CharP.cast_eq_zero, zero_mul, zero_add]
+    sorry
+
 noncomputable def ψ (x : ℝ) {q : ℕ} (a : ZMod q) : ℝ :=
     summatory ((Nat.modEqs a).indicator Λ) x
 
@@ -30,6 +47,19 @@ theorem ψ_one_one {x : ℝ} : ψ x (1 : ZMod 1) = Chebyshev.psi x := by
 )]
 def onCoprime {R : Type*} [Zero R] (r : ℕ) (f : ℕ → R) (n : ℕ) : R :=
   if r.Coprime n then f n else 0
+
+theorem onCoprime_apply {R : Type*} [Zero R] (r : ℕ) (f : ℕ → R) (n : ℕ) :
+  onCoprime r f n = if r.Coprime n then f n else 0 := rfl
+
+@[congr]
+theorem onCoprime_congr {R : Type*} [Zero R] (r s : ℕ) (f g : ℕ → R) (n m : ℕ)
+    (hrs : r = s) (hfg : ∀ x, x = n → r.Coprime x → f x = g x) (hnm : n = m) :
+    onCoprime r f n = onCoprime s g m := by
+  subst_vars
+  simp [onCoprime]
+  split_ifs with h
+  · exact hfg _ rfl h
+  · rfl
 
 theorem onCoprime_nonneg {R : Type*} [Zero R] [Preorder R] {r : ℕ} {f : ℕ → R} {n : ℕ}
     (hf : 0 ≤ f n) : 0 ≤ onCoprime r f n := by

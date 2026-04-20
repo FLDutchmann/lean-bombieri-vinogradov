@@ -80,6 +80,24 @@ theorem summatory_apply {R : Type*} [AddCommMonoid R] {f : ℕ → R} {x : ℝ} 
   · have : x < 0 := by linarith
     simp [Nat.floor_of_nonpos this.le, summatory_of_neg this]
 
+@[congr]
+theorem summatory_congr {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R]
+    {f g : ℕ → R} {x y : ℝ} (hxy : x = y) (h : ∀ n : ℕ, 0 < n → n ≤ x → f n = g n) :
+    summatory f x = summatory g y := by
+  subst hxy
+  simp [summatory]
+  apply Finset.sum_congr rfl fun n hn ↦ ?_
+  simp only [Nat.mem_Icc, Nat.one_le_cast] at hn
+  apply h n (by grind) hn.2
+
+theorem summatory_congr_fun {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R]
+    {f g : ℕ → R} {x : ℝ} (h : ∀ n : ℕ, 0 < n → n ≤ x → f n = g n) :
+    summatory f x = summatory g x := by
+  simp [summatory]
+  apply Finset.sum_congr rfl fun n hn ↦ ?_
+  simp only [Nat.mem_Icc, Nat.one_le_cast] at hn
+  apply h n (by grind) hn.2
+
 @[gcongr]
 theorem summatory_eq_summatory_of_lt_of_eq_zero {R : Type*} [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R]
     (f : ℕ → R) (x y : ℝ) (hxy : x ≤ y) (hf : ∀ n : ℕ, x < n ∧ n ≤ y → f n = 0) :

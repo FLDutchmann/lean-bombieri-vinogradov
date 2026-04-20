@@ -1,6 +1,8 @@
 import Mathlib
 import Architect
 
+import BV.ForMathlib.Indicator
+
 import BV.Axioms
 import BV.Defs
 
@@ -56,7 +58,6 @@ lemma Delta_eq_sum_char {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZM
   have hφ : (Nat.totient q : ℂ) ≠ 0 :=
     Nat.cast_ne_zero.mpr (Nat.totient_pos.mpr (NeZero.pos q)).ne'
   simp only [Delta, summatory, Nat.modEqs, onCoprime, Set.indicator_apply, Set.mem_setOf_eq]
-  push_cast
   -- Suffices to prove the equivalent form with φ cleared
   suffices h : (q.totient : ℂ) * ∑ i ∈ Nat.Icc 1 y, ↑(if (i : ZMod q) = (a : ZMod q) then f i else 0) -
       ∑ i ∈ Nat.Icc 1 y, ↑(if q.Coprime i then f i else 0) =
@@ -293,6 +294,180 @@ theorem Delta_convolution_eq {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q} (ha : I
     simp [this, MulChar.map_nonunit, summatory_zero]
   · exact ha
 
+
+/-! ### Periodic function lemmas for Delta_one_bound -/
+
+-- Perhaps we're supposed to unfold Function.Periodic?
+theorem Function.Periodic.add_period_apply {α β : Type*} [Add α] {f : α → β} {c : α} (hf : f.Periodic c) (a : α) :
+    f (a + c) = f a := hf a
+
+theorem Function.Periodic.period_add_apply {α β : Type*} [AddCommMonoid α] {f : α → β} {c : α} (hf : f.Periodic c) (a : α) :
+    f (c + a) = f a := by
+  rw [add_comm, hf.add_period_apply]
+
+/-- Rewrite `summatory` as a sum over `Finset.range` with a shift. -/
+lemma summatory_eq_sum_range {R : Type*} [AddCommMonoid R] {f : ℕ → R} {x : ℝ} :
+    summatory f x = ∑ n ∈ Finset.range ⌊x⌋₊, f (n + 1) := by
+  rw [summatory_apply, ← Finset.sum_image (g := (· + 1))]
+  · congr
+    ext n
+    simp only [Finset.mem_Ioc, Finset.mem_image, Finset.mem_range]
+    refine ⟨?_, by grind⟩
+    rintro ⟨hn_pos, hnx⟩
+    use n-1
+    grind
+  · simp
+
+/-- Sum of a periodic function over `k` full periods. -/
+lemma sum_range_periodic {R : Type*} [AddCommMonoid R] [Module ℕ R]
+    {f : ℕ → R} {q : ℕ} (hf : f.Periodic q) (k : ℕ) :
+    ∑ n ∈ Finset.range (k * q), f n = k • ∑ n ∈ Finset.range q, f n := by
+  induction k with
+  | zero => simp
+  | succ k hk =>
+    simp [add_mul, Finset.sum_range_add]
+    rw [hk, ← smul_eq_mul k q]
+    simp_rw [(hf.nsmul k).period_add_apply, succ_nsmul]
+
+/-- Sum of a periodic function splits into full periods plus a remainder. -/
+lemma sum_range_periodic_mod {R : Type*} [AddCommMonoid R] [Module ℕ R]
+    {f : ℕ → R} {q : ℕ} (hf : f.Periodic q) (N : ℕ) :
+    ∑ n ∈ Finset.range N, f n =
+      (N / q) • ∑ n ∈ Finset.range q, f n + ∑ n ∈ Finset.range (N % q), f n := by
+  conv_lhs => rw [← Nat.div_add_mod N q, Finset.sum_range_add, mul_comm q]
+  rw [sum_range_periodic hf, ← smul_eq_mul]
+  congr 1
+  simp only [(hf.nsmul (N/q)).period_add_apply]
+
+/-- The modular residue indicator of a constant function is periodic with period `q`. -/
+lemma indicator_modEqs_periodic {q : ℕ} (a : ZMod q) (c : ℝ) :
+    Function.Periodic ((Nat.modEqs a).indicator (fun _ => c)) q := by
+  classical
+  simp [Set.indicator_apply]
+
+/-- The coprimality indicator of a constant function is periodic with period `q`. -/
+lemma onCoprime_periodic (q : ℕ) (c : ℝ) :
+    Function.Periodic (onCoprime q (fun _ => c)) q := by
+  classical
+  intro n
+  simp [onCoprime_apply]
+
+/-- In one full period `{0, …, q-1}`, the indicator of `n ≡ a (mod q)` sums to `1`,
+    when `a` is a unit. -/
+lemma sum_range_indicator_modEqs {q : ℕ} [NeZero q] {a : ZMod q} :
+    ∑ n ∈ Finset.range q, (Nat.modEqs a).indicator (fun _ => (1 : ℝ)) n = 1 := by
+  classical
+  simp [Set.indicator_apply, Finset.card_eq_one]
+  use a.val
+  ext n
+  simp only [Finset.mem_filter, Finset.mem_range, Finset.mem_singleton]
+  constructor
+  -- I'm surprised `grind` wasn't of more use here...
+  · rintro ⟨h, rfl⟩
+    simp [Nat.mod_eq_of_lt h]
+  · rintro rfl
+    simp only [ZMod.natCast_val, ZMod.cast_id', id_eq, and_true, a.val_lt]
+
+theorem sum_range_of_periodic_full_eq_add {R : Type*} [AddCommMonoid R] {a q : ℕ} (f : ℕ → R) (hf : f.Periodic q) :
+    ∑ i ∈ Finset.range q, f i = ∑ i ∈ Finset.range q, f (i + a) := by
+  by_cases hq : q = 0
+  · simp [hq]
+  have hq : 0 < q := by grind
+  conv_rhs => rw [← Finset.sum_image (by simp)]
+  rw [eq_comm]
+  apply Finset.sum_bij (i := fun x _ ↦ (x % q))
+  · simp +contextual [Nat.mod_lt _ hq]
+  · simp
+    intro x hx y hy hxy
+    have : x ≡ y [MOD q] := Nat.ModEq.add_right_cancel' _ hxy
+    apply Nat.ModEq.eq_of_lt_of_lt this hx hy
+  · simp
+    intro b hb
+    have h : 0 ≤ (b - a : ℤ) % q := by
+      apply Int.emod_nonneg _ (by positivity)
+    let c : ℕ := ((b - a : ℤ) % q).natAbs
+    refine ⟨c, ?_, ?_⟩
+    · zify
+      simp [c, abs_of_nonneg h]
+      apply Int.emod_lt _ (by positivity)
+    · rw [← Nat.mod_eq_of_lt hb, ← Nat.ModEq, ← Int.natCast_modEq_iff]
+      simp [c]
+      rw [abs_of_nonneg]
+      · grw [Int.mod_modEq]
+        simp
+      · apply Int.emod_nonneg _ (by positivity)
+  · simp [hf.map_mod_nat]
+
+-- TODO: Consider other proof: use a-1 instead of constructing bijection.
+/-- In one full period `{1, …, q}`, the indicator of `n ≡ a (mod q)` sums to `1`,
+    when `a` is a unit. -/
+lemma sum_range_indicator_modEqs_add_one {q : ℕ} [hq : NeZero q] {a : ZMod q} :
+    ∑ n ∈ Finset.range q, (Nat.modEqs a).indicator (fun _ => (1 : ℝ)) (n+1) = 1 := by
+  rw [← sum_range_of_periodic_full_eq_add (a := 1), sum_range_indicator_modEqs (a := a)]
+  apply indicator_modEqs_periodic
+
+/-- In one full period `{0, …, q-1}`, the coprime indicator sums to `φ(q)`. -/
+lemma sum_range_onCoprime_zeta {q : ℕ} :
+    ∑ n ∈ Finset.range q, onCoprime q (fun _ => (1 : ℝ)) (n) = (Nat.totient q : ℝ) := by
+  simp [onCoprime_apply, Nat.totient_eq_card_coprime]
+
+/-- In one full period `{1, …, q}`, the coprime indicator sums to `φ(q)`. -/
+lemma sum_range_onCoprime_zeta_add_one {q : ℕ} :
+    ∑ n ∈ Finset.range q, onCoprime q (fun _ => (1 : ℝ)) (n+1) = (Nat.totient q : ℝ) := by
+  rw [← sum_range_of_periodic_full_eq_add]
+  · apply sum_range_onCoprime_zeta
+  · apply onCoprime_periodic
+
+theorem apply_mem_range_iff_mem_range_comp {α β : Type*} {f : α → β} [AddCommGroup β] (a b : β) :
+  (a + b) ∈ Set.range f ↔ a ∈ Set.range (fun n ↦ f n - b) := by
+  grind
+
+attribute [simp] Nat.mod_le
+
+theorem sum_range_modEq {q : ℕ} {a : ZMod q} [hq : NeZero q] (n : ℕ) :
+    ∃ c : ℝ, 0 ≤ c ∧ c ≤ 1 ∧
+    ∑ m ∈ Finset.range n, (Nat.modEqs a).indicator (fun _ ↦ (1 : ℝ)) (m + 1) = (n / q : ℕ) + c := by
+  classical
+  use ∑ n ∈ Finset.range (n % q), (Nat.modEqs a).indicator (fun _ => (1 : ℝ)) (n+1)
+  refine ⟨by positivity, ?B, ?_⟩
+  case B =>
+    conv_rhs => rw [← sum_range_indicator_modEqs_add_one (q := q) (a := a)]
+    gcongr
+    · exact (Nat.mod_lt n hq.pos).le
+  rw [sum_range_periodic_mod ((indicator_modEqs_periodic a 1).add_const 1)]
+  congr 1
+  · simp [sum_range_indicator_modEqs_add_one]
+
+theorem sum_range_onCoprime {q : ℕ} (n : ℕ):
+    ∑ m ∈ Finset.range n, onCoprime q (fun _ ↦ (1 : ℝ)) (m + 1) = q.totient * (n / q : ℕ) + ∑ m ∈ Finset.range (n % q), onCoprime q (fun _ ↦  (1 : ℝ)) (m+1) := by
+  rw [sum_range_periodic_mod ((onCoprime_periodic q 1).add_const 1) n]
+  simp [sum_range_onCoprime_zeta_add_one]
+  ring
+
+theorem summatory_zeta_eq {x : ℝ} : summatory (ζ : ArithmeticFunction ℝ) x = summatory (fun _ ↦ 1) x := by
+  congr! with n hn_pos hnx
+  simp only [natCoe_apply, zeta_apply, Nat.cast_ite, CharP.cast_eq_zero, Nat.cast_one,
+    ite_eq_right_iff, zero_ne_one, imp_false]
+  grind
+
+@[congr]
+theorem Set.indicator_apply_congr {α β : Type*} [Zero β] (r s : Set α) (f g : α → β) (a b : α) (hab : a = b) (hrs : r = s) (hfg : ∀ n, n = a → f n = g n) :
+    r.indicator f a = s.indicator g b := by
+  classical
+  subst_vars
+  by_cases h : b ∈ s
+  · simp [h, hfg]
+  · simp [h]
+
+theorem Delta_zeta_eq_Delta_one {x : ℝ} {q : ℕ} (a : ZMod q) :
+    Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a) = Δ_[fun _ ↦ (1 : ℝ)](x; q, a) := by
+  simp [Delta]
+  congr! 2 with n hn hnx
+  · congr! 1 with n rfl
+    grind
+  · congr! 2 with n hn hnx n rfl hqn
+    grind
+
 @[blueprint (latexEnv := "lemma") (statement := /--
 For $x \ge 1$, $q \in \N$ and $a \in (\Z/q\Z)^*$,
 $$|\Delta_1(x;\, q,\, a)| \le 1$$
@@ -301,7 +476,27 @@ Carefully consider length $q$ intervals. Alternatively, write
 $$\Delta_1(t;\, q,\, a) = \frac{1}{\varphi(q)} \sum_{a' \in (\Z/q\Z)^*} \left( \sum_{\substack{n \le t \\ n \equiv a \pmod{q}}} 1 - \sum_{\substack{n \le t \\ n \equiv a' \pmod{q}}} 1 \right)$$
 and note each inner difference is bounded by $1$ in absolute value.
 -/)]
-theorem Delta_one_bound {x : ℝ} {q : ℕ} {a : ZMod q} (ha : IsUnit a) : |Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a)| ≤ 1 := by sorry
+theorem Delta_one_bound {x : ℝ} {q : ℕ} (a : ZMod q) (hq : 0 < q) : |Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a)| ≤ 1 := by
+  have : NeZero q := ⟨hq.ne.symm⟩
+  rw [Delta_zeta_eq_Delta_one a]
+  simp [Delta, summatory_eq_sum_range]
+  obtain ⟨c, ⟨hc_nonneg, hc_le, h⟩⟩ := sum_range_modEq (q := q) (a := a) ⌊x⌋₊
+  rw [h, sum_range_onCoprime]
+  rw [abs_le]
+  have : 0 < (q.totient : ℝ) := by
+    norm_cast
+    simp [Nat.totient_pos, hq]
+  field_simp
+  have : (0 : ℝ) ≤ ∑ x ∈ Finset.range (⌊x⌋₊ % q), onCoprime q (fun _ ↦ (1:ℝ)) (x+1) := by
+    positivity
+  have : ∑ x ∈ Finset.range (⌊x⌋₊ % q), onCoprime q (fun _ ↦ (1 : ℝ)) (x+1) ≤ q.totient := by
+    trans ∑ x ∈ Finset.range q, onCoprime q (fun _ ↦ (1 : ℝ)) (x+1)
+    · gcongr
+      apply (Nat.mod_lt _ hq).le
+    · rw [sum_range_onCoprime_zeta_add_one]
+  -- TODO: Make this neater.
+  refine ⟨by nlinarith, by nlinarith⟩
+
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 If $g$ is continuously differentiable on $[1, x]$ then
@@ -309,7 +504,7 @@ $$\Delta_g(x;\,q,\,a) = \Delta_1(x;\,q,\,a)\,g(x) - \int_1^x \Delta_1(t;\,q,\,a)
 -/) (proof := /--
 By Abel summation.
 -/) (uses := [Delta_one_bound])]
-theorem Delta_abel_summation {q : ℕ} {a : ZMod q} (g g': ℝ → ℝ) {x : ℝ} (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) (hg' : ∀ t ∈ Set.Icc 1 x, HasDerivAt g (g' t) t) :
+theorem Delta_abel_summation {q : ℕ} {a : ZMod q} (g g': ℝ → ℝ) {x : ℝ} (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) (hg' : ∀ t ∈ Set.Ioo 1 x, HasDerivAt g (g' t) t) :
     Δ_[fun n ↦ g n](x; q, a) = Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a) - ∫ t in 1..x, Δ_[(ζ : ArithmeticFunction ℝ)](t; q, a) * g' t := by sorry
 
 @[blueprint (latexEnv := "lemma") (statement := /--
@@ -317,7 +512,10 @@ If $g$ is continuously differentiable and monotone on $[1, x]$ with $g(0) = 0$, 
 $$|\Delta_g(x;\, q,\, a)| \le 2g(x)$$
 -/) (uses := [Delta_one_bound, Delta_abel_summation])]
 theorem Delta_monotone_bound {q : ℕ} {a : ZMod q} (g : ℝ → ℝ) {x : ℝ} (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) :
-    |Δ_[fun n ↦ g n](x; q, a)| ≤ 2 * g x := by sorry
+    |Δ_[fun n ↦ g n](x; q, a)| ≤ 2 * g x := by
+  grw [Delta_abel_summation (g' := deriv g) _ hg, abs_sub]
+  · sorry
+  · sorry
 
 @[blueprint (statement := /--
 Let $v \ge 0$ and let $f$ be an arithmetic function supported on $[1, x]$. For $x \ge 2$, $q \in \N$ and $a \in (\Z/q\Z)^*$,
