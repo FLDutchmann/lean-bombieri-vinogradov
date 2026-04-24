@@ -51,7 +51,7 @@ $$\Delta_f(y ;q, a) = \frac{1}{\varphi(q)} \sum_{\chi \pmod{q}, \chi \ne \chi_0}
 lemma Delta_eq_sum_char {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q}
     (ha : IsUnit a) :
     open Classical in
-    (↑(Delta f y q a) : ℂ) = (1 / (Nat.totient q : ℂ)) *
+    (↑(Delta f y q a) : ℂ) = (Nat.totient q : ℂ)⁻¹ *
       ∑ χ : DirichletCharacter ℂ q, if χ ≠ 1 then
         star (χ (a : ZMod q)) * summatory (fun n => (f n : ℂ) * χ n) y
       else 0 := by
@@ -94,6 +94,14 @@ lemma Delta_eq_sum_char {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZM
     split_ifs <;> simp
   rw [hFsum, hF1]
 
+theorem Delta_eq_summatory {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q}
+    (ha : IsUnit a) :
+    open Classical in
+    (↑(Delta f y q a) : ℂ) = (Nat.totient q : ℂ)⁻¹ *
+      ∑ χ : DirichletCharacter ℂ q, if χ ≠ 1 then
+        star (χ (a : ZMod q)) * summatory (fun n => (f n : ℂ) * χ n) y
+      else 0 := by
+  sorry
 
 
 @[blueprint (statement :=
@@ -278,8 +286,8 @@ theorem Delta_convolution_eq {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q} (ha : I
   split_ifs with hn
   · rw [Delta_eq_sum_char, ← Finset.sum_filter]
     · pull summatory
-      congr! 2 with m
-      simp only [ne_eq, RCLike.star_def, twist_apply, one_div, map_mul, star_mul']
+      congr! 1 with m
+      simp only [ne_eq, RCLike.star_def, one_div, map_mul, star_mul']
       simp_rw [Finset.mul_sum]
       congr! 1 with χ hχ
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hχ
@@ -497,25 +505,114 @@ theorem Delta_one_bound {x : ℝ} {q : ℕ} (a : ZMod q) (hq : 0 < q) : |Δ_[(ζ
   -- TODO: Make this neater.
   refine ⟨by nlinarith, by nlinarith⟩
 
+-- TODO: make this proof pretty.
+/-- Abel summation stated interms of `summatory`. -/
+theorem abel_summation_summatory {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) {f : ℝ → 𝕜}
+    {a b : ℝ} (hac : ∀ n : ℕ, 0 < n → n ≤ a → c n = 0) (ha : 0 ≤ a) (hab : a ≤ b)
+    (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
+    (hf_int : MeasureTheory.LocallyIntegrableOn (deriv f) (Set.Icc a b)) :
+    summatory (fun k ↦ f k * c k) b = f b * summatory c b - f a * summatory c a
+      - ∫ t in Set.Ioc a b, deriv f t * summatory c t := by
+  have hf_int : MeasureTheory.IntegrableOn (deriv f) (Set.Icc a b) := by
+    apply MeasureTheory.LocallyIntegrableOn.integrableOn_isCompact hf_int
+    apply ConditionallyCompleteLinearOrder.isCompact_Icc
+  wlog hc : c 0 = 0 generalizing c with ih
+  · let c' (n : ℕ) := if n = 0 then 0 else c n
+    have {x : ℝ} : summatory c x = summatory c' x := by
+      congr! 1 with n hn_pos hnx
+      grind
+    simp_rw [this]
+    rw [← ih]
+    · congr! 1 with n hn_pos hnb
+      grind
+    · simp +contextual [c', hac]
+    · simp [c']
+  simp_rw [summatory_apply]
+  trans ∑ k ∈ Finset.Ioc ⌊a⌋₊ ⌊b⌋₊, f k * c k
+  · rw [eq_comm]
+    apply Finset.sum_subset
+    · gcongr; simp
+    · simp only [Finset.mem_Ioc, not_and, not_le, mul_eq_zero, and_imp]
+      intro k hk_pos hkb habk
+      right
+      apply hac k hk_pos
+      rw [← Nat.le_floor_iff ha]
+      grind
+  rw [sum_mul_eq_sub_sub_integral_mul c  ha hab hf_diff hf_int]
+  · have {n : ℕ} : ∑ k ∈ Finset.Icc 0 n, c k = ∑ k ∈ Finset.Ioc 0 n, c k := by
+      rw [eq_comm]
+      apply Finset.sum_subset
+      · exact Finset.Ioc_subset_Icc_self
+      simp only [Finset.mem_Icc, zero_le, true_and, Finset.mem_Ioc, not_and, not_le]
+      grind
+    simp [this]
 
+/-
+Notes:
+The API surrounding LocallyIntegrableOn is annoying and disjointed.
+The main problem is that proving f*g is locally integrable basically requires one of the two functions to be continuous.
+-/
+-- There's this really _annoying_ fact issue with the lower bound: I want to take the integral from 1; but (I think) this only works if the summatory function used strict inequality. But we can just use 1-ε in practise, but ofc. this requires slightly more differentiability. Or does it? Maybe DifferentiableAt g 1 is enough?
+open MeasureTheory in
 @[blueprint (latexEnv := "lemma") (statement := /--
 If $g$ is continuously differentiable on $[1, x]$ then
 $$\Delta_g(x;\,q,\,a) = \Delta_1(x;\,q,\,a)\,g(x) - \int_1^x \Delta_1(t;\,q,\,a)\,g'(t)\,\mathrm{d}t$$
 -/) (proof := /--
 By Abel summation.
 -/) (uses := [Delta_one_bound])]
-theorem Delta_abel_summation {q : ℕ} {a : ZMod q} (g g': ℝ → ℝ) {x : ℝ} (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) (hg' : ∀ t ∈ Set.Ioo 1 x, HasDerivAt g (g' t) t) :
-    Δ_[fun n ↦ g n](x; q, a) = Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a) - ∫ t in 1..x, Δ_[(ζ : ArithmeticFunction ℝ)](t; q, a) * g' t := by sorry
+theorem Delta_abel_summation {q : ℕ} [hq : NeZero q] {a : ZMod q} (ha : IsUnit a) (g  : ℝ → ℂ) {l x : ℝ}
+    (hg : ∀ t ∈ Set.Icc l x, DifferentiableAt ℝ g t)
+    (hg_int : MeasureTheory.LocallyIntegrableOn (deriv g) (Set.Icc l x))
+    (hl : 0 ≤ l) (hl' : l < 1) (hlx : l ≤ x) :
+    Δ_[fun n ↦ g n](x; q, a) = Δ_[fun _ ↦ (1 : ℂ)](x; q, a) * g x - ∫ t in Set.Ioc l x, Δ_[fun _ ↦ (1 : ℂ)](t; q, a) * deriv g t := by
+  simp_rw [Delta_eq_sum_char ha]
+  simp_rw [← Finset.sum_filter, Finset.mul_sum, Finset.sum_mul]
+  rw [MeasureTheory.integral_finset_sum _ ?A, ← Finset.sum_sub_distrib]
+  case A =>
+    intro χ hχ
+    rw [← IntegrableOn]
+    apply IntegrableOn.mono_set (t := Set.Icc l x) _ (by grind)
+    apply MeasureTheory.LocallyIntegrableOn.integrableOn_isCompact _ ?compact
+    case compact => apply ConditionallyCompleteLinearOrder.isCompact_Icc
+    pull summatory
+    simp_rw [summatory_mul]
+    apply hg_int.isLocallyBoundedOn_mul
+    · measurability
+    · fun_prop -- Wahoo! The API for locally bounded functions works!
+    · fun_prop
+  simp_rw [mul_assoc, MeasureTheory.integral_const_mul, ← mul_sub]
+  congr! 3 with χ hχ
+  let c : ℕ → ℂ := fun n ↦ χ n
+  have hn' {P : ℕ → Prop} (n : ℕ) : 0 < n → n ≤ l → P n := by
+    intro hn hn'
+    have := hn'.trans_lt hl'
+    norm_cast at this
+    grind
+  have := abel_summation_summatory (c := c) (f := (fun n ↦ g n)) (a := l) (b := x) (by apply hn') hl hlx hg hg_int
+  rw [this]
+  congr! 1
+  · rw [summatory_eq_zero (x := l)]
+    · simp
+      rw [mul_comm]
+    · apply hn'
+  congr! 2 with x
+  simp [mul_comm, c]
 
 @[blueprint (latexEnv := "lemma") (statement := /--
 If $g$ is continuously differentiable and monotone on $[1, x]$ with $g(0) = 0$, then for all $t \ge 1$ and $a \in (\Z/q\Z)^*$,
 $$|\Delta_g(x;\, q,\, a)| \le 2g(x)$$
 -/) (uses := [Delta_one_bound, Delta_abel_summation])]
-theorem Delta_monotone_bound {q : ℕ} {a : ZMod q} (g : ℝ → ℝ) {x : ℝ} (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) :
-    |Δ_[fun n ↦ g n](x; q, a)| ≤ 2 * g x := by
-  grw [Delta_abel_summation (g' := deriv g) _ hg, abs_sub]
-  · sorry
-  · sorry
+theorem Delta_monotone_bound {q : ℕ} [NeZero q] {a : ZMod q} (ha : IsUnit a) (g : ℝ → ℝ) {x : ℝ} (hx : 0 ≤ x) (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) (h : MonotoneOn g (Set.Icc 1 x)) :
+    ‖Δ_[fun n ↦ (g n : ℂ)](x; q, a)‖ ≤ 2 * g x := by
+  sorry
+  -- grw [Delta_abel_summation (g := fun n ↦ g n) ha, norm_sub_le]
+  -- · sorry
+  -- · sorry
+  -- · sorry
+  -- · sorry
+  -- · sorry
+  -- · sorry
+  -- · sorry
 
 @[blueprint (statement := /--
 Let $v \ge 0$ and let $f$ be an arithmetic function supported on $[1, x]$. For $x \ge 2$, $q \in \N$ and $a \in (\Z/q\Z)^*$,

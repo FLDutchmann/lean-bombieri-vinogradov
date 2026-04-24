@@ -18,18 +18,6 @@ theorem Nat.mem_modEqs {q : ℕ} (a : ZMod q) (n : ℕ) :
     n ∈ modEqs a ↔ n = a := by
   rfl
 
-theorem Nat.modEqs_eq_range {q : ℕ} (a : ZMod q) :
-    Nat.modEqs a = Set.range (fun x ↦ q * x + a.val) := by
-  ext n
-  simp only [mem_modEqs, Set.mem_range]
-  constructor
-  · rintro rfl
-    use n/q
-    simp [Nat.div_add_mod]
-  · rintro ⟨y, rfl⟩
-    simp only [cast_add, cast_mul, CharP.cast_eq_zero, zero_mul, zero_add]
-    sorry
-
 noncomputable def ψ (x : ℝ) {q : ℕ} (a : ZMod q) : ℝ :=
     summatory ((Nat.modEqs a).indicator Λ) x
 
