@@ -1,5 +1,173 @@
 import Mathlib
 
+
+/-!
+
+# Locally Bounded Functions
+
+This file develops the theory of locally bounded functions, and relates it to local integrability.
+
+In particular:
+ * A measurable locally bounded function is locally integrable.
+
+TODO:
+ * Relate to Continuous / ContinuousOn  (and ContinuousAt for BoundedAtFilter)
+
+-/
+
+
+/-
+Conversation with claude opus 4.7:
+
+I'm trying to find the right level of generality for some
+  mathematical API. I've defined this notion of IsLocallyBounded using
+   Filter.BoundedAtFilter, but I don't think this will work very well
+  with division. In this case I need the function I'm dividing by to
+  locally stay away from 0. Perhaps th right thing to do here is to
+  generalize BoundedAtFilter to some predicate AwayFromFilterAtFilter
+  f l1 l2 saying that f "stays away from" l1 near l2. Does this sound
+  right? And how would you say that in the language of filters?
+
+● Yes, this is a sensible direction. The clean filter-theoretic
+  phrasing is disjointness of the pushforward:
+
+  def IsAwayFromAtFilter (l₁ : Filter β) (l₂ : Filter α) (f : α → β) :
+  Prop :=
+    Disjoint (Filter.map f l₂) l₁
+
+  Read: "along l₂, f eventually avoids l₁." For your division use-case
+  you'd take l₁ = 𝓝 0 (in a T1/normed setting), and it unfolds to the
+  familiar "∃ ε > 0, ∀ᶠ x in l₂, ε ≤ ‖f x‖" — exactly what makes 1/f
+  well-behaved.
+
+  This is the natural dual of BoundedAtFilter f l := f =O[l] (1 : α →
+  β), which itself is essentially Tendsto f l (cobounded β) — i.e., a
+  pushforward condition. Yours is Disjoint (map f l₂) l₁ instead of map
+   f l₂ ≤ l₁. The tradeoff: a bespoke IsAwayFromAtFilter predicate is
+  more discoverable and gets its own API (mul, comp, etc.), but you
+  could also just use Disjoint (map f l) (𝓝 0) inline and skip the
+  abstraction until you have ≥3 call sites that want it. Given you're
+  already wrapping BoundedAtFilter in IsLocallyBounded, a parallel
+  IsLocallyAwayFromZero (specializing l₁ := 𝓝 0) is probably the sweet
+  spot — full generality in l₁ rarely pays off.
+
+❯ No I think it should be its own predicate - we'd generalize
+  islocallybounded to eat a filter for the codomain, and that way we
+  can hopefully let fun_prop do most of the work proving it.
+
+  Read 1 file (ctrl+o to expand)
+
+● Looking at the current shape — IsLocallyBounded f := ∀ x,
+  BoundedAtFilter (𝓝 x) f — the natural generalization is to Disjoint,
+  since BoundedAtFilter l f is exactly Disjoint (map f l) (cobounded β)
+   once you unfold it (bounded = doesn't escape to infinity =
+  pushforward disjoint from cobounded).
+
+  So the unifying predicate:
+
+  def IsLocallyDisjoint {α β : Type*} [TopologicalSpace α] (l : Filter
+  β) (f : α → β) : Prop :=
+    ∀ x, Disjoint (Filter.map f (𝓝 x)) l
+
+  with the existing notion recovered as IsLocallyBounded f :=
+  IsLocallyDisjoint (Bornology.cobounded β) f and "locally away from 0"
+   as IsLocallyDisjoint (𝓝 0) f. Set-version: replace 𝓝 x with 𝓝[s] x.
+  (Bonus: IsLocallyDisjoint (𝓝 a) gives "locally avoids a" for free,
+  e.g. for log/Gamma near singularities.)
+
+  For the fun_prop story this is genuinely nice because the combinators
+   split cleanly:
+
+  - Closed under composition with continuous maps on the source —
+  always: if g is continuous at x, map (f ∘ g) (𝓝 x) ≤ map f (𝓝 (g x)),
+   and disjointness is monotone.
+  - Closed under target maps that send l somewhere disjoint — e.g. add,
+   mul, neg are lemmas about how cobounded/𝓝 0 interact with the
+  algebraic ops on β. The mul case for "away from 0" is exactly
+  Filter.Tendsto.mul plus the fact that 𝓝 0 * 𝓝 0 ≤ 𝓝 0; for cobounded
+  it's the corresponding cobounded-vs-cobounded fact.
+
+  The one wrinkle: you currently get BoundedAtFilter.add/mul etc. for
+  free from Asymptotics. After generalizing you'll need to re-prove the
+   boundedness combinators in the Disjoint-of-pushforward form (or just
+   bridge via a single iff lemma IsLocallyBounded f ↔ IsLocallyDisjoint
+   (cobounded β) f and keep the old API on top). I'd recommend the
+  bridge — keeps the Mathlib-facing surface unchanged, and lets
+  fun_prop use whichever form has the better lemma at hand.
+
+
+❯  Hmmm... What would the algebraic combinator lemmas actually look
+  like? I'd assume we would have separate lemmas for cobounded/ nhds /
+   nhdsWithin?
+
+● Good question — and the answer splits along two independent axes:
+
+  Source filter (𝓝 vs 𝓝[s]): doesn't affect the content of the
+  algebraic lemmas, only the boilerplate. You'd get IsLocallyDisjoint
+  and IsLocallyDisjointOn versions of each combinator with identical
+  proofs modulo 𝓝 x ↦ 𝓝[s] x. (Same situation you already have.)
+
+  Target filter (cobounded vs 𝓝 0 vs 𝓝 a vs …): this is where the
+  lemmas genuinely differ, because each algebraic op interacts
+  differently with each filter. There is no single
+  IsLocallyDisjoint.add — the hypothesis on l needed for add to be
+  closed depends on l. Concretely:
+
+  ┌────────┬─────────────┬──────────────────────┬─────────────────┐
+  │   op   │ cobounded β │  𝓝 0 (away from 0)   │ 𝓝 a (away from  │
+  │        │             │                      │       a)        │
+  ├────────┼─────────────┼──────────────────────┼─────────────────┤
+  │ add    │ ✓           │ ✗ (1 + (−1) = 0)     │ only with extra │
+  │        │             │                      │  hyp            │
+  ├────────┼─────────────┼──────────────────────┼─────────────────┤
+  │ neg    │ ✓           │ ✓                    │ becomes "away   │
+  │        │             │                      │ from −a"        │
+  ├────────┼─────────────┼──────────────────────┼─────────────────┤
+  │ mul    │ ✓           │ ✓ (in a normed       │ n/a             │
+  │        │             │ division ring)       │                 │
+  ├────────┼─────────────┼──────────────────────┼─────────────────┤
+  │ const  │ always      │ iff c ≠ 0            │ iff c ≠ a       │
+  │ c      │             │                      │                 │
+  ├────────┼─────────────┼──────────────────────┼─────────────────┤
+  │ inv    │ swaps with  │ swaps with cobounded │ —               │
+  │        │ 𝓝 0         │                      │                 │
+  └────────┴─────────────┴──────────────────────┴─────────────────┘
+
+  So the API ends up looking like:
+
+  -- general source-side composition (works for any l)
+  @[fun_prop]
+  theorem IsLocallyDisjoint.comp_continuous {l : Filter β} {f : α → β}
+  {g : γ → α}
+      (hf : IsLocallyDisjoint l f) (hg : Continuous g) :
+      IsLocallyDisjoint l (f ∘ g)
+
+  -- target-specific algebraic lemmas — separate per filter
+  @[fun_prop]
+  theorem IsLocallyBounded.add ...                  -- l = cobounded
+  @[fun_prop]
+  theorem IsLocallyAwayFromZero.mul ...             -- l = 𝓝 0
+  @[fun_prop]
+  theorem IsLocallyAwayFromZero.inv_isLocallyBounded ... -- bridges 𝓝 0
+   ↔ cobounded under inv
+
+  The pattern I'd suggest: keep IsLocallyDisjoint as the primitive
+  (carries the source-side composition lemmas, the On ↔ non-On bridge,
+  the locally-integrable consequence in the boundedness
+  specialization), and then introduce thin abbrevs or defs
+  IsLocallyBounded := IsLocallyDisjoint (cobounded _) and
+  IsLocallyAwayFrom a := IsLocallyDisjoint (𝓝 a) that carry their own
+  algebraic combinator API. That way fun_prop sees a specialized,
+  well-tagged predicate per use case (which it handles much better than
+   a predicate parametrized over an arbitrary l), but you don't
+  duplicate the source-side machinery.
+
+  Practically: you wrote each IsLocallyBounded.{add,neg,mul,smul} lemma
+   once and IsLocallyBoundedOn.* once. Adding "away from 0" doubles
+  that — six new lemmas, mirroring the existing six, plus a couple of
+  inv/bridge lemmas tying the two together. That's the real cost.
+-/
+
 open MeasureTheory
 
 theorem MeasureTheory.IntegrableAtFilter.mul_boundedAtFilter {α : Type u_1} {ε' : Type u_4}
@@ -57,7 +225,6 @@ theorem MeasureTheory.IntegrableAtFilter.boundedAtFilter_mul {α : Type u_1} {ε
     · simp [hx]
       grind
 
-
 theorem Filter.BoundedAtFilter.integrableAtFilter {α β : Type*}
     [TopologicalSpace α] [MeasurableSpace α] [NormedAddCommGroup β]
     {μ : Measure α} {f : α → β} {l : Filter α}
@@ -96,7 +263,6 @@ structure IsLocallyBounded {α β : Type*} [TopologicalSpace α] [Norm β] (f : 
 
 theorem IsLocallyBounded.boundedAtFilter {α β : Type*} [TopologicalSpace α] [Norm β] {f : α → β}
     (hf : IsLocallyBounded f) (x : α) : (nhds x).BoundedAtFilter f := hf.locally_bdd' x
-
 
 theorem IsLocallyBounded.locallyIntegrable {α β : Type*}
     [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [NormedAddCommGroup β]
@@ -194,8 +360,6 @@ theorem MeasureTheory.LocallyIntegrableOn.isLocallyBoundedOn_mul
     LocallyIntegrableOn (fun x => g x * f x) s μ := fun x hx ↦
   (hf x hx).boundedAtFilter_mul (hs.nhdsWithin_isMeasurablyGenerated _) hg_meas (hg.locally_bddOn' x hx)
 
-
-
 section OnCombinators
 variable {α β : Type*}
 
@@ -234,6 +398,13 @@ end OnCombinators
 end On
 
 @[fun_prop]
-def IsLocallyBounded.isLocallyBoundedOn {α β : Type*} [TopologicalSpace α] [Norm β] {f : α → β} (s : Set α)
+theorem IsLocallyBounded.isLocallyBoundedOn {α β : Type*} [TopologicalSpace α] [Norm β] {f : α → β} (s : Set α)
     (hf : IsLocallyBounded f) : IsLocallyBoundedOn f s :=
   ⟨fun a _ ↦ (hf.locally_bdd' a).mono nhdsWithin_le_nhds⟩
+
+
+-- @[fun_prop]
+-- theorem Continuous.isLocallyBoundedOn {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Norm β]
+--     [ContinuousENorm β] {f : α → β} (hf : Continuous f) :
+--     IsLocallyBounded f := by
+--   sorry

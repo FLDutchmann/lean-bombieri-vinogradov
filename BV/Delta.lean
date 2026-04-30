@@ -1,6 +1,8 @@
 import Mathlib
 import Architect
 
+import BV.Mathlib.MeasureTheory.Function.LocallyIntegrable
+
 import BV.ForMathlib.Indicator
 
 import BV.Axioms
@@ -94,14 +96,14 @@ lemma Delta_eq_sum_char {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZM
     split_ifs <;> simp
   rw [hFsum, hF1]
 
-theorem Delta_eq_summatory {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q}
-    (ha : IsUnit a) :
-    open Classical in
-    (↑(Delta f y q a) : ℂ) = (Nat.totient q : ℂ)⁻¹ *
-      ∑ χ : DirichletCharacter ℂ q, if χ ≠ 1 then
-        star (χ (a : ZMod q)) * summatory (fun n => (f n : ℂ) * χ n) y
-      else 0 := by
-  sorry
+-- theorem Delta_eq_summatory {f : ℕ → ℂ} {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q}
+--     (ha : IsUnit a) :
+--     open Classical in
+--     (↑(Delta f y q a) : ℂ) = (Nat.totient q : ℂ)⁻¹ *
+--       ∑ χ : DirichletCharacter ℂ q, if χ ≠ 1 then
+--         star (χ (a : ZMod q)) * summatory (fun n => (f n : ℂ) * χ n) y
+--       else 0 := by
+--   sorry
 
 
 @[blueprint (statement :=
@@ -280,14 +282,14 @@ theorem Delta_convolution_eq {y : ℝ} {q : ℕ} [NeZero q] {a : ZMod q} (ha : I
   rw [Delta_eq_sum_char (f := ↑(f*g))]
   simp_rw [← twist_apply, mul_twist, ← Finset.sum_filter]
   simp_rw [summatory_mul_eq_summatory]
-  simp only [one_div, twist_apply]
+  simp only [twist_apply]
   pull summatory
   congr! 2 with n
   split_ifs with hn
   · rw [Delta_eq_sum_char, ← Finset.sum_filter]
     · pull summatory
       congr! 1 with m
-      simp only [ne_eq, RCLike.star_def, one_div, map_mul, star_mul']
+      simp only [ne_eq, RCLike.star_def, map_mul, star_mul']
       simp_rw [Finset.mul_sum]
       congr! 1 with χ hχ
       simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hχ
@@ -484,9 +486,8 @@ Carefully consider length $q$ intervals. Alternatively, write
 $$\Delta_1(t;\, q,\, a) = \frac{1}{\varphi(q)} \sum_{a' \in (\Z/q\Z)^*} \left( \sum_{\substack{n \le t \\ n \equiv a \pmod{q}}} 1 - \sum_{\substack{n \le t \\ n \equiv a' \pmod{q}}} 1 \right)$$
 and note each inner difference is bounded by $1$ in absolute value.
 -/)]
-theorem Delta_one_bound {x : ℝ} {q : ℕ} (a : ZMod q) (hq : 0 < q) : |Δ_[(ζ : ArithmeticFunction ℝ)](x; q, a)| ≤ 1 := by
+theorem Delta_one_bound {x : ℝ} {q : ℕ} (a : ZMod q) (hq : 0 < q) : ‖Δ_[fun _ ↦ (1 : ℝ)](x; q, a)‖ ≤ 1 := by
   have : NeZero q := ⟨hq.ne.symm⟩
-  rw [Delta_zeta_eq_Delta_one a]
   simp [Delta, summatory_eq_sum_range]
   obtain ⟨c, ⟨hc_nonneg, hc_le, h⟩⟩ := sum_range_modEq (q := q) (a := a) ⌊x⌋₊
   rw [h, sum_range_onCoprime]
@@ -507,15 +508,12 @@ theorem Delta_one_bound {x : ℝ} {q : ℕ} (a : ZMod q) (hq : 0 < q) : |Δ_[(ζ
 
 -- TODO: make this proof pretty.
 /-- Abel summation stated interms of `summatory`. -/
-theorem abel_summation_summatory {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) {f : ℝ → 𝕜}
+theorem abel_summation_summatory {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) {f f' : ℝ → 𝕜}
     {a b : ℝ} (hac : ∀ n : ℕ, 0 < n → n ≤ a → c n = 0) (ha : 0 ≤ a) (hab : a ≤ b)
-    (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
-    (hf_int : MeasureTheory.LocallyIntegrableOn (deriv f) (Set.Icc a b)) :
+    (hf_diff : ∀ t ∈ Set.Icc a b, HasDerivAt f (f' t) t)
+    (hf_int : MeasureTheory.LocallyIntegrableOn f' (Set.Icc a b)) :
     summatory (fun k ↦ f k * c k) b = f b * summatory c b - f a * summatory c a
-      - ∫ t in Set.Ioc a b, deriv f t * summatory c t := by
-  have hf_int : MeasureTheory.IntegrableOn (deriv f) (Set.Icc a b) := by
-    apply MeasureTheory.LocallyIntegrableOn.integrableOn_isCompact hf_int
-    apply ConditionallyCompleteLinearOrder.isCompact_Icc
+      - ∫ t in Set.Ioc a b, f' t * summatory c t := by
   wlog hc : c 0 = 0 generalizing c with ih
   · let c' (n : ℕ) := if n = 0 then 0 else c n
     have {x : ℝ} : summatory c x = summatory c' x := by
@@ -527,6 +525,24 @@ theorem abel_summation_summatory {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜)
       grind
     · simp +contextual [c', hac]
     · simp [c']
+  -- Convert from f' to deriv f to match the mathlib API.
+  have  hf' (t : ℝ) (ht : t ∈ Set.Icc a b) : f' t = deriv f t := (hf_diff t ht).deriv.symm
+  have : ∫ (t : ℝ) in Set.Ioc a b, f' t * summatory c t = ∫ (t : ℝ) in Set.Ioc a b, deriv f t * summatory c t := by
+    simp_rw [← MeasureTheory.integral_Icc_eq_integral_Ioc]
+    apply MeasureTheory.integral_congr_ae
+    filter_upwards [MeasureTheory.ae_restrict_mem (measurableSet_Icc)]
+    simp +contextual [hf']
+  simp_rw [this]
+  have hf_int : MeasureTheory.LocallyIntegrableOn (deriv f) (Set.Icc a b) := by
+    apply hf_int.congr
+    filter_upwards [MeasureTheory.ae_restrict_mem (measurableSet_Icc)]
+    exact hf'
+  have hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t := by
+    exact fun t ht ↦ (hf_diff t ht).differentiableAt
+  -- Complete the actual proof
+  have hf_int : MeasureTheory.IntegrableOn (deriv f) (Set.Icc a b) := by
+    apply MeasureTheory.LocallyIntegrableOn.integrableOn_isCompact hf_int
+    apply ConditionallyCompleteLinearOrder.isCompact_Icc
   simp_rw [summatory_apply]
   trans ∑ k ∈ Finset.Ioc ⌊a⌋₊ ⌊b⌋₊, f k * c k
   · rw [eq_comm]
@@ -560,11 +576,11 @@ $$\Delta_g(x;\,q,\,a) = \Delta_1(x;\,q,\,a)\,g(x) - \int_1^x \Delta_1(t;\,q,\,a)
 -/) (proof := /--
 By Abel summation.
 -/) (uses := [Delta_one_bound])]
-theorem Delta_abel_summation {q : ℕ} [hq : NeZero q] {a : ZMod q} (ha : IsUnit a) (g  : ℝ → ℂ) {l x : ℝ}
-    (hg : ∀ t ∈ Set.Icc l x, DifferentiableAt ℝ g t)
-    (hg_int : MeasureTheory.LocallyIntegrableOn (deriv g) (Set.Icc l x))
+theorem Delta_abel_summation {q : ℕ} [hq : NeZero q] {a : ZMod q} (ha : IsUnit a) (g g' : ℝ → ℂ) {l x : ℝ}
+    (hg : ∀ t ∈ Set.Icc l x, HasDerivAt g (g' t) t)
+    (hg_int : MeasureTheory.LocallyIntegrableOn g' (Set.Icc l x))
     (hl : 0 ≤ l) (hl' : l < 1) (hlx : l ≤ x) :
-    Δ_[fun n ↦ g n](x; q, a) = Δ_[fun _ ↦ (1 : ℂ)](x; q, a) * g x - ∫ t in Set.Ioc l x, Δ_[fun _ ↦ (1 : ℂ)](t; q, a) * deriv g t := by
+    Δ_[fun n ↦ g n](x; q, a) = Δ_[fun _ ↦ (1 : ℂ)](x; q, a) * g x - ∫ t in Set.Ioc l x, Δ_[fun _ ↦ (1 : ℂ)](t; q, a) * g' t := by
   simp_rw [Delta_eq_sum_char ha]
   simp_rw [← Finset.sum_filter, Finset.mul_sum, Finset.sum_mul]
   rw [MeasureTheory.integral_finset_sum _ ?A, ← Finset.sum_sub_distrib]
@@ -598,21 +614,101 @@ theorem Delta_abel_summation {q : ℕ} [hq : NeZero q] {a : ZMod q} (ha : IsUnit
   congr! 2 with x
   simp [mul_comm, c]
 
+@[push_cast]
+lemma Complex.ofReal_setIndicator {ι : Type*} {s : Set ι} (f : ι → ℝ) (n : ι) :
+  (↑(s.indicator (fun n ↦ f n) n) : ℂ) = s.indicator (fun n ↦ (f n : ℂ)) n := by
+  classical
+  simp [Set.indicator_apply]
+  split_ifs <;> simp
+
+@[push_cast]
+lemma Complex.ofReal_onCoprime {f : ℕ → ℝ} (r n : ℕ): (↑(onCoprime r (fun n ↦ f n) n) : ℂ) = (onCoprime r (fun n ↦ (f n : ℂ)) n) := by
+  simp [onCoprime]
+  split_ifs <;> simp
+
+@[push_cast]
+lemma Complex.ofReal_summatory {g : ℕ → ℝ} {x : ℝ} : (↑(summatory (fun n ↦ g n) x) : ℂ) = (summatory (fun n ↦ (g n : ℂ)) x) := by
+  simp [summatory]
+
+@[push_cast]
+lemma Complex.ofReal_Delta {g : ℕ → ℝ} {x : ℝ} {q : ℕ} {a : ZMod q} : ↑(Δ_[fun n ↦ g n](x; q, a)) = Δ_[fun n ↦ (g n : ℂ)](x; q, a) := by
+  simp [Delta]
+  push_cast
+  rfl
+
+@[push_cast]
+lemma Complex.ofReal_integral {X : Type*} [MeasurableSpace X] {«μ» : MeasureTheory.Measure X} {f : X → ℝ} : ↑(∫ (x : X), f x ∂«μ») = ∫ (x : X), (↑(f x) : ℂ) ∂«μ» := by
+  apply Eq.symm
+  apply integral_complex_ofReal
+
+attribute [norm_cast] integral_complex_ofReal
+
+theorem Delta_abel_summation_real {q : ℕ} [hq : NeZero q] {a : ZMod q} (ha : IsUnit a) (g  : ℝ → ℝ) {l x : ℝ}
+    (hg : ∀ t ∈ Set.Icc l x, DifferentiableAt ℝ g t)
+    (hg_int : MeasureTheory.LocallyIntegrableOn (deriv g) (Set.Icc l x))
+    (hl : 0 ≤ l) (hl' : l < 1) (hlx : l ≤ x) :
+    Δ_[fun n ↦ g n](x; q, a) = Δ_[fun _ ↦ (1 : ℝ)](x; q, a) * g x - ∫ t in Set.Ioc l x, Δ_[fun _ ↦ (1 : ℝ)](t; q, a) * deriv g t := by
+  apply_fun Complex.ofReal
+  · push_cast
+    apply Delta_abel_summation (g := fun n ↦ g n) ha _ _ hl hl' hlx
+    sorry
+  · exact Complex.ofReal_injective
+
+
+-- theorem Complex.deriv_ofReal_comp {f : ℝ → ℝ} {x : ℝ} : deriv (fun n ↦ (f n : ℂ)) = Complex.ofReal ∘ deriv f := by
+--   ext x
+--   simp only [Function.comp_apply]
+--   by_cases hf : DifferentiableAt ℝ f x
+--   · have := hf.hasDerivAt
+--     have := this.ofReal_comp
+--     rw [← hf.hasDerivAt.ofReal_comp.deriv]
+--   · sorry
+
+theorem Complex.ofReal_lipschitzWith : LipschitzWith 1 Complex.ofReal := by
+  simp only [LipschitzWith, edist_dist, ENNReal.coe_one, one_mul, dist_nonneg,
+    ENNReal.ofReal_le_ofReal_iff]
+  simp_rw [SeminormedAddGroup.dist_eq]
+  intro x y
+  norm_cast
+
+theorem Complex.ofReal_antilipschitzWith : AntilipschitzWith 1 Complex.ofReal := by
+  simp only [AntilipschitzWith, edist_dist, ENNReal.coe_one, one_mul, dist_nonneg,
+    ENNReal.ofReal_le_ofReal_iff]
+  simp_rw [SeminormedAddGroup.dist_eq]
+  intro x y
+  norm_cast
+
+open MeasureTheory in
+--TODO : Add g 0 = 0 condition and remove ‖‖
 @[blueprint (latexEnv := "lemma") (statement := /--
-If $g$ is continuously differentiable and monotone on $[1, x]$ with $g(0) = 0$, then for all $t \ge 1$ and $a \in (\Z/q\Z)^*$,
+If $g$ is continuously differentiable and monotone on $[1, x]$ with $g(1) = 0$, then for all $t \ge 1$ and $a \in (\Z/q\Z)^*$,
 $$|\Delta_g(x;\, q,\, a)| \le 2g(x)$$
 -/) (uses := [Delta_one_bound, Delta_abel_summation])]
-theorem Delta_monotone_bound {q : ℕ} [NeZero q] {a : ZMod q} (ha : IsUnit a) (g : ℝ → ℝ) {x : ℝ} (hx : 0 ≤ x) (hg : ContDiffOn ℝ 1 g (Set.Icc 1 x)) (h : MonotoneOn g (Set.Icc 1 x)) :
+theorem Delta_monotone_bound {q : ℕ} [NeZero q] {a : ZMod q} (ha : IsUnit a) (g : ℝ → ℝ) {l x : ℝ} (hl : 0 ≤ l) (hl1 : l < 1) (hx : l ≤ x)
+    (hg : ∀ t ∈ Set.Icc l x, DifferentiableAt ℝ g t)
+    (hg_int : MeasureTheory.LocallyIntegrableOn (deriv g) (Set.Icc l x))
+    (hg_mono : MonotoneOn g (Set.Icc 1 x))
+    (hg1 : g 1 = 0)
+    :
     ‖Δ_[fun n ↦ (g n : ℂ)](x; q, a)‖ ≤ 2 * g x := by
+  let g' (x : ℝ) : ℂ := ↑(deriv g x)
+  grw [Delta_abel_summation (g := fun n ↦ g n) (g' := g') (l := l) ha ?diff ?int hl hl1 hx, norm_sub_le, norm_mul, norm_integral_le_integral_norm, Delta_one_bound]
+  case diff =>
+    simp_rw [g']
+    intro t ht
+    have := (hg t ht).hasDerivAt
+    apply this.ofReal_comp
+  case int =>
+    simp_rw [g']
+    rw [MeasureTheory.locallyIntegrableOn_iff_locallyIntegrable_restrict]
+    ·
+      --have := MeasureTheory.LipschitzWith.integrable_comp_iff_of_antilipschitz (m := inferInstance) («μ» := MeasureTheory.volume)
+        -- (g := Complex.ofReal) (f := deriv g)
+        -- Complex.ofReal_lipschitzWith Complex.ofReal_antilipschitzWith (by simp)
+      -- MeasureTheory.LipschitzWith.integrable_comp_iff_of_antilipschitz
+      sorry
+    · apply isClosed_Icc
   sorry
-  -- grw [Delta_abel_summation (g := fun n ↦ g n) ha, norm_sub_le]
-  -- · sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry
-  -- · sorry
 
 @[blueprint (statement := /--
 Let $v \ge 0$ and let $f$ be an arithmetic function supported on $[1, x]$. For $x \ge 2$, $q \in \N$ and $a \in (\Z/q\Z)^*$,
@@ -620,4 +716,5 @@ $$|\Delta_{f * \log^v}(x;\, q,\, a)| \le 2(\log x)^v \sum_{k \le x} |f(k)|$$
 -/) (proof := /--
 Straightforward application of the previous lemmas.
 -/) (uses := [Delta_one_bound, Delta_abel_summation, Delta_monotone_bound])]
-theorem Delta_flog_bound {v : ℕ} {f : ArithmeticFunction ℝ} {x : ℝ} (hx : 2 ≤ x) {q : ℕ} (a : ZMod q) (ha : IsUnit a) : Δ_[f * ppow log v](x; q, a) ≤ 2 * (Real.log x)^v * summatory (fun k ↦ |f k|) x := by sorry
+theorem Delta_flog_bound {v : ℕ} {f : ArithmeticFunction ℝ} {x : ℝ} (hx : 2 ≤ x) {q : ℕ} (a : ZMod q) (ha : IsUnit a) : Δ_[f * ppow log v](x; q, a) ≤ 2 * (Real.log x)^v * summatory (fun k ↦ |f k|) x := by
+  sorry
